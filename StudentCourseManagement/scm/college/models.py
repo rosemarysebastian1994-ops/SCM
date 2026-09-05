@@ -69,7 +69,7 @@ class Course(models.Model):
     credits = models.IntegerField()
 
     def __str__(self):
-        return self.course_name
+        return f"{self.course_name} - {self.department.name}"
 
 class Subject(models.Model):
     course = models.ForeignKey(
