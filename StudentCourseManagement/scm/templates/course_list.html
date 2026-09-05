@@ -1,10 +1,10 @@
 {% extends 'admin_dashboard.html' %}
 
 {% block content %}
-
+<div class="container mt-4">
 <h2>Courses</h2>
 
-<a href="{% url 'college:course_create' %}">
+<a href="{% url 'college:course_create' %}" class="btn btn-success mb-3">
     Add Course
 </a>
 
@@ -46,11 +46,11 @@
 
 <td>
 
-<a href="{% url 'college:course_update' course.id %}">
+<a href="{% url 'college:course_update' course.id %}" class="btn btn-primary btn-sm mb-3">
 Edit
 </a>
 
-<a href="{% url 'college:course_delete' course.id %}">
+<a href="{% url 'college:course_delete' course.id %}" class="btn btn-danger btn-sm">
 Delete
 </a>
 
@@ -61,5 +61,5 @@ Delete
 {% endfor %}
 
 </table>
-
+</div>
 {% endblock %}

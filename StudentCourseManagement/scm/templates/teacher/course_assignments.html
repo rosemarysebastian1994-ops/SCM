@@ -2,50 +2,77 @@
 
 {% block content %}
 
-<table class="table table-bordered table-striped">
-<tr>
-    <th>Title</th>
-    <th>Description</th>
-    <th>Due Date</th>
-    <th>Actions</th>
-</tr>
-{% for assignment in assignments %}
-<tr>
+<div class="container mt-5">
 
-<td>{{ assignment.title }}</td>
+    <h2 class="mb-4">
+        Assignments - {{ course.course_name }}
+    </h2>
 
-<td>{{ assignment.description }}</td>
+    {% for subject in subjects %}
 
-<td>{{ assignment.due_date }}</td>
+    <div class="card shadow-sm mb-4">
 
-<td>
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                {{ subject.subject_name }}
+                <small>
+                    ({{ subject.subject_code }})
+                </small>
+            </h4>
+        </div>
 
-<a href="{% url 'college:edit_assignment' assignment.id %}"
-class="btn btn-warning btn-sm">
+        <div class="card-body">
 
-Edit
+            {% for assignment in subject.assignments.all %}
 
-</a>
+            <div class="border rounded p-3 mb-3">
 
-<a href="{% url 'college:delete_assignment' assignment.id %}"
-class="btn btn-danger btn-sm">
+                <h5>{{ assignment.title }}</h5>
 
-Delete
+                <p>{{ assignment.description }}</p>
 
-</a>
+                <p>
+                    <strong>Due Date:</strong>
+                    {{ assignment.due_date }}
+                </p>
 
+                <a href="{% url 'college:edit_assignment' assignment.id %}"
+                   class="btn btn-warning btn-sm">
+                    Edit
+                </a>
 
-<a href="{% url 'college:view_submissions' assignment.id %}"
-   class="btn btn-primary">
+                <a href="{% url 'college:delete_assignment' assignment.id %}"
+                   class="btn btn-danger btn-sm">
+                    Delete
+                </a>
 
-View Submissions
+                <a href="{% url 'college:view_submissions' assignment.id %}"
+                   class="btn btn-info btn-sm">
+                    View Submissions
+                </a>
 
-</a>
+            </div>
 
-</td>
+            {% empty %}
 
-</tr>
-{% endfor %}
-</table>
+            <p class="text-muted">
+                No assignments available for this subject.
+            </p>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="alert alert-warning">
+        No subjects assigned to you for this course.
+    </div>
+
+    {% endfor %}
+
+</div>
 
 {% endblock %}

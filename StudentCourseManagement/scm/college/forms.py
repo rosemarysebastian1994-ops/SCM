@@ -12,6 +12,9 @@ class StudentRegistrationForm(UserCreationForm):
         choices=ROLE_CHOICES,
         widget=forms.Select()
     )
+
+    email = forms.EmailField(required=True)
+
     class Meta:
         model = User
         fields = (
@@ -23,6 +26,16 @@ class StudentRegistrationForm(UserCreationForm):
             'password1',
             'password2',
         )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(
+                "This email is already registered."
+            )
+
+        return email
 
 class DepartmentForm(forms.ModelForm):
     class Meta:
@@ -83,3 +96,22 @@ class GradeSubmissionForm(forms.ModelForm):
             "marks",
             "feedback"
         ]
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']
+
+
+class TeacherProfileForm(forms.ModelForm):
+    class Meta:
+        model = Teacher
+        fields = [
+            'phone', 'qualification', 'department'
+        ]
+
+
+class StudentProfileForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = ['admission_no', 'year', 'phone', 'department']

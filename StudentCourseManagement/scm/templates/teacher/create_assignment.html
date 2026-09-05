@@ -4,22 +4,37 @@
 
 <div class="container mt-4">
 
-<h2>Create Assignment</h2>
+<h3>Create Assignment</h3>
 
-<h4>{{ course.name }}</h4>
+<div class="alert alert-info">
 
-<form method="post">
+    <strong>Subject:</strong>
+    {{ subject.subject_name }}
 
-{% csrf_token %}
+    <br>
 
-{{ form|crispy }}
+    <strong>Course:</strong>
+    {{ subject.course.course_name }}
 
-<button
-class="btn btn-success">
+    <br>
 
-Create Assignment
+    <strong>Semester:</strong>
+    {{ subject.semester }}
 
-</button>
+</div>
+
+<form method="POST">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit"
+            class="btn btn-primary">
+
+        Create Assignment
+
+    </button>
 
 </form>
 

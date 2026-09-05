@@ -32,11 +32,12 @@
                     <input
                         type="date"
                         name="date"
+                        id="attendance_date"
                         class="form-control"
-                        value="{{ today|date:'Y-m-d' }}"
+                        value="{{ selected_date|default:'' }}"
+                        max="{{ today|date:'Y-m-d' }}"
                         required
                     >
-
                 </div>
 
                 <table class="table table-bordered">
@@ -72,9 +73,11 @@
                                     type="radio"
                                     name="status_{{ enrollment.student.id }}"
                                     value="present"
-                                    required
-                                >
 
+                                    {% if enrollment.attendance_status == True %}
+                                        checked
+                                    {% endif %}
+                                >
                             </td>
 
                             <td>
@@ -83,6 +86,7 @@
                                     type="radio"
                                     name="status_{{ enrollment.student.id }}"
                                     value="absent"
+                                    {% if enrollment.attendance_status == False %}checked{% endif %}
                                 >
 
                             </td>
@@ -126,5 +130,26 @@
     </div>
 
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dateInput = document.getElementById("attendance_date");
+
+    dateInput.addEventListener("change", function () {
+
+        const selectedDate = this.value;
+
+        if (selectedDate) {
+
+            window.location.href =
+                window.location.pathname + "?date=" + selectedDate;
+
+        }
+
+    });
+
+});
+</script>
 
 {% endblock %}

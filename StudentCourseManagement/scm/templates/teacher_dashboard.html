@@ -18,6 +18,7 @@
 								<li><a href="{% url 'college:teacher_courses' %}">My Courses</a></li>
                                 <li><a href="{% url 'college:teacher_students' %}">View Students</a></li>
                                 <li><a href="{% url 'college:select_course_attendance' %}">Attendance</a></li>
+								<li><a href="{% url 'college:attendance_history' %}">Attendance History</a></li>
 							</ul>
 						</nav>
 					</div><!--- END Col -->
@@ -68,9 +69,9 @@
 		<!-- END NAVBAR -->
 {% endblock %}
 {% block content %}
-<h1>Teacher Dashboard</h1>
+<h1 class="text-center">Teacher Dashboard</h1>
 
-<h3>Welcome {{ request.user.username }}</h3>
+<h3 class="text-center">Welcome {{ request.user.username }}</h3>
 
 
 {% endblock %}

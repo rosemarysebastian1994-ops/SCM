@@ -1,0 +1,46 @@
+{% extends "teacher_dashboard.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2>
+        Attendance History
+    </h2>
+
+    <h4 class="text-muted">
+        {{ course.course_name }}
+    </h4>
+
+    <hr>
+
+    {% if dates %}
+
+        <div class="list-group">
+
+            {% for date in dates %}
+
+            <a href="{% url 'college:attendance_detail' course.id date|date:'Y-m-d' %}"
+               class="list-group-item list-group-item-action">
+
+                Attendance - {{ date }}
+
+            </a>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="alert alert-info">
+
+            No attendance records found.
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

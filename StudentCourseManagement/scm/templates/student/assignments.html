@@ -2,88 +2,101 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container mt-5">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>My Assignments</h2>
+    <h2 class="mb-4">My Assignments</h2>
+
+    {% for enrollment in enrollments %}
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">
+                {{ enrollment.course.course_name }}
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            {% for subject in enrollment.course.subjects.all %}
+
+            <div class="mb-4">
+
+                <h5>
+                    {{ subject.subject_name }}
+                    <span class="text-muted">
+                        ({{ subject.subject_code }})
+                    </span>
+                </h5>
+
+                <hr>
+
+                {% for assignment in subject.assignments.all %}
+
+                <div class="card mb-3 border">
+
+                    <div class="card-body">
+
+                        <h5 class="card-title">
+                            {{ assignment.title }}
+                        </h5>
+
+                        <p class="card-text">
+                            {{ assignment.description }}
+                        </p>
+
+                        <p>
+                            <strong>Due Date:</strong>
+                            {{ assignment.due_date }}
+                        </p>
+
+                        <a href="{% url 'college:submit_assignment' assignment.id %}"
+                           class="btn btn-primary">
+                            Submit Assignment
+                        </a>
+
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                <p class="text-muted">
+                    No assignments available for this subject.
+                </p>
+
+                {% endfor %}
+
+            </div>
+
+            {% empty %}
+
+            <p class="text-muted">
+                No subjects available for this course.
+            </p>
+
+            {% endfor %}
+
+        </div>
+
     </div>
 
-    {% if assignments %}
-
-    <table class="table table-bordered table-hover">
-
-        <thead class="table-dark">
-
-            <tr>
-                <th>Course</th>
-                <th>Assignment</th>
-                <th>Description</th>
-                <th>Due Date</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-        {% for assignment in assignments %}
-
-            <tr>
-
-                <td>{{ assignment.course.course_name }}</td>
-
-                <td>{{ assignment.title }}</td>
-
-                <td>{{ assignment.description|truncatechars:60 }}</td>
-
-                <td>{{ assignment.due_date|date:"d M Y" }}</td>
-
-                <td>
-
-                    {% if assignment.due_date < now %}
-                        <span class="badge bg-danger">Closed</span>
-                    {% else %}
-                        <span class="badge bg-success">Open</span>
-                    {% endif %}
-
-                </td>
-
-                <td>
-
-                    <a href="{% url 'college:submit_assignment' assignment.id %}"
-                       class="btn btn-primary btn-sm">
-
-                        Submit
-
-                    </a>
-
-                </td>
-
-            </tr>
-
-        {% endfor %}
-
-        </tbody>
-
-    </table>
-
-    {% else %}
+    {% empty %}
 
     <div class="alert alert-info">
-
-        You don't have any assignments yet.
-
+        You are not enrolled in any courses.
     </div>
 
-    {% endif %}
-
-    {% if messages %}
-        {% for m in messages %}
-            {{ m }}
-        {% endfor %}
-    {% endif %}
+    {% endfor %}
 
 </div>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
 
 {% endblock %}

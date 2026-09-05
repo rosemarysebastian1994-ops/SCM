@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import StudentRegistrationForm, DepartmentForm, TeacherForm, StudentForm, CourseForm, EnrollmentForm, AssignmentForm, SubmissionForm, GradeSubmissionForm
-from .models import Department, Teacher, Student, Course, Enrollment, Assignment, Submission, Attendance
+from .forms import StudentRegistrationForm, DepartmentForm, TeacherForm, StudentForm, CourseForm, EnrollmentForm, \
+    AssignmentForm, SubmissionForm, GradeSubmissionForm, UserUpdateForm, TeacherProfileForm, StudentProfileForm
+from .models import Department, Teacher, Student, Course, Enrollment, Assignment, Submission, Attendance, HOD, Subject
 from django.contrib import messages
 from django.utils import timezone
 
@@ -12,6 +13,8 @@ def home(request):
         return redirect('college:teacher_dashboard')
     elif user.groups.filter(name='Student').exists():
         return redirect('college:student_dashboard')
+    elif user.groups.filter(name='HOD').exists():
+        return redirect('college:hod_dashboard')
     else:
         pass
     return render(request, 'home.html')
@@ -41,8 +44,15 @@ def login_user(request):
                 return redirect('college:teacher_dashboard')
             elif user.groups.filter(name='Student').exists():
                 return redirect('college:student_dashboard')
+            elif user.groups.filter(name='HOD').exists():
+                return redirect('college:hod_dashboard')
             else:
                 return redirect('college:home')
+        else:
+            messages.error(
+                request,
+                "Invalid username or password."
+            )
     return render(request, 'login.html')
 
 def logout_user(request):
@@ -223,44 +233,135 @@ def my_courses(request):
 
 @login_required
 def teacher_students(request):
-    teacher = Teacher.objects.get(user=request.user)
-    enrollments = Enrollment.objects.filter(course__teacher=teacher).select_related('student','course','student__user')
-    return render(request,'teacher/students.html',{'enrollments': enrollments})
+
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
+
+    # Get courses that have subjects assigned to this teacher
+    courses = Course.objects.filter(
+        subjects__teacher=teacher
+    ).distinct()
+
+    # Get enrollments for those courses
+    enrollments = Enrollment.objects.filter(
+        course__in=courses
+    ).select_related(
+        'student',
+        'course'
+    )
+
+    return render(
+        request,
+        'teacher/students.html',
+        {
+            'enrollments': enrollments
+        }
+    )
 
 @login_required
-def create_assignment(request, course_id):
-    teacher = Teacher.objects.get(user=request.user)
-    course = get_object_or_404(Course,id=course_id,teacher=teacher)
+def create_assignment(request, subject_id):
+
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
+
+    # Security: teacher can only create assignments
+    # for subjects assigned to them
+    subject = get_object_or_404(
+        Subject,
+        id=subject_id,
+        teacher=teacher
+    )
+
     if request.method == "POST":
+
         form = AssignmentForm(request.POST)
+
         if form.is_valid():
+
             assignment = form.save(commit=False)
-            assignment.course = course
+
+            assignment.subject = subject
+
             assignment.save()
+
             return redirect('college:teacher_courses')
+
     else:
+
         form = AssignmentForm()
-    return render(request,'teacher/create_assignment.html',{'form': form,'course': course})
+
+    return render(
+        request,
+        'teacher/create_assignment.html',
+        {
+            'form': form,
+            'subject': subject
+        }
+    )
 
 @login_required
 def teacher_courses(request):
-    teacher = Teacher.objects.get(user=request.user)
-    courses = Course.objects.filter(teacher=teacher).select_related('department')
-    context = {'teacher': teacher,'courses': courses}
-    return render(request,'teacher/courses.html',context)
+
+    teacher = Teacher.objects.get(
+        user=request.user
+    )
+
+    subjects = Subject.objects.filter(
+        teacher=teacher
+    ).select_related(
+        'course',
+        'course__department'
+    ).order_by(
+        'course__course_name',
+        'semester',
+        'subject_name'
+    )
+
+    context = {
+        'teacher': teacher,
+        'subjects': subjects
+    }
+
+    return render(
+        request,
+        'teacher/courses.html',
+        context
+    )
 
 @login_required
 def student_assignments(request):
-    student = Student.objects.get(user=request.user)
-    assignments = Assignment.objects.filter(course__enrollment__student=student).select_related('course')
-    return render(request,'student/assignments.html',{'assignments': assignments})
+
+    student = get_object_or_404(
+        Student,
+        user=request.user
+    )
+
+    enrollments = Enrollment.objects.filter(
+        student=student
+    ).select_related(
+        'course'
+    ).prefetch_related(
+        'course__subjects__assignments'
+    )
+
+    return render(
+        request,
+        'student/assignments.html',
+        {
+            'enrollments': enrollments
+        }
+    )
 
 @login_required
 def submit_assignment(request, assignment_id):
     student = get_object_or_404(Student,user=request.user)
     assignment = get_object_or_404(Assignment,id=assignment_id)
     # Ensure the student is enrolled in the course
-    enrolled = Enrollment.objects.filter(student=student,course=assignment.course).exists()
+    enrolled = Enrollment.objects.filter(student=student,course=assignment.subject.course).exists()
     if not enrolled:
         messages.error(request,"You are not enrolled in this course.")
         return redirect("college:student_assignments")
@@ -283,17 +384,64 @@ def submit_assignment(request, assignment_id):
 
 @login_required
 def view_submissions(request, assignment_id):
-    teacher = get_object_or_404(Teacher,user=request.user)
-    assignment = get_object_or_404(Assignment,id=assignment_id,course__teacher=teacher)
-    submissions = Submission.objects.filter(assignment=assignment).select_related("student__user")
-    return render(request,"teacher/view_submissions.html",{"assignment": assignment,"submissions": submissions})
+
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
+
+    assignment = get_object_or_404(
+        Assignment,
+        id=assignment_id
+    )
+
+    # Make sure this teacher teaches this subject
+    if assignment.subject.teacher != teacher:
+        return redirect('college:teacher_dashboard')
+
+    submissions = Submission.objects.filter(
+        assignment=assignment
+    ).select_related(
+        'student'
+    )
+
+    return render(
+        request,
+        'teacher/view_submissions.html',
+        {
+            'assignment': assignment,
+            'submissions': submissions
+        }
+    )
 
 @login_required
 def course_assignments(request, course_id):
-    teacher = Teacher.objects.get(user=request.user)
-    course = get_object_or_404(Course,id=course_id,teacher=teacher)
-    assignments = Assignment.objects.filter(course=course)
-    return render(request,"teacher/course_assignments.html",{"course": course,"assignments": assignments})
+
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
+
+    course = get_object_or_404(
+        Course,
+        id=course_id
+    )
+
+    subjects = Subject.objects.filter(
+        course=course,
+        teacher=teacher
+    ).prefetch_related(
+        'assignments'
+    )
+
+    return render(
+        request,
+        'teacher/course_assignments.html',
+        {
+            'course': course,
+            'subjects': subjects
+        }
+    )
 
 @login_required
 def edit_assignment(request, assignment_id):
@@ -320,25 +468,74 @@ def delete_assignment(request, assignment_id):
 
 @login_required
 def grade_submission(request, submission_id):
-    teacher = get_object_or_404(Teacher,user=request.user)
-    submission = get_object_or_404(Submission,id=submission_id,assignment__course__teacher=teacher)
+
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
+
+    submission = get_object_or_404(
+        Submission,
+        id=submission_id,
+        assignment__subject__teacher=teacher
+    )
+
     if request.method == "POST":
-        form = GradeSubmissionForm(request.POST,instance=submission)
+
+        form = GradeSubmissionForm(
+            request.POST,
+            instance=submission
+        )
+
         if form.is_valid():
-            graded = form.save(commit=False)
+
+            graded = form.save(
+                commit=False
+            )
+
             graded.graded_at = timezone.now()
+
             graded.save()
-            messages.success(request,"Submission graded successfully.")
-            return redirect("college:view_submissions",submission.assignment.id)
+
+            return redirect(
+                'college:view_submissions',
+                assignment_id=submission.assignment.id
+            )
+
     else:
-        form = GradeSubmissionForm(instance=submission)
-    return render(request,"teacher/grade_submission.html",{"submission": submission,"form": form})
+
+        form = GradeSubmissionForm(
+            instance=submission
+        )
+
+    return render(
+        request,
+        'teacher/grade_submission.html',
+        {
+            'form': form,
+            'submission': submission
+        }
+    )
 
 @login_required
 def my_results(request):
     student = Student.objects.get(user=request.user)
-    submissions = Submission.objects.filter(student=student).select_related("assignment","assignment__course")
-    return render(request,"student/results.html",{"submissions": submissions})
+
+    submissions = Submission.objects.filter(
+        student=student
+    ).select_related(
+        "assignment",
+        "assignment__subject",
+        "assignment__subject__course"
+    )
+
+    return render(
+        request,
+        "student/results.html",
+        {
+            "submissions": submissions
+        }
+    )
 
 from django.db.models import Q
 from django.views import View
@@ -353,9 +550,6 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.views.decorators.http import require_POST
 from openai import OpenAI
-
-
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 
 import json
@@ -375,6 +569,7 @@ from .models import (
 
 @require_POST
 def chatbot(request):
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
     try:
         data = json.loads(request.body)
@@ -654,12 +849,17 @@ def chatbot(request):
 def select_course_attendance(request):
     teacher = Teacher.objects.get(user=request.user)
 
-    courses = Course.objects.filter(teacher=teacher)
+    courses = Course.objects.filter(
+        subjects__teacher=teacher
+    ).distinct()
 
     return render(request, 'teacher/select_course_attendance.html', {
         'courses': courses
     })
 
+
+from django.urls import reverse
+@login_required
 def mark_attendance(request, course_id):
 
     teacher = get_object_or_404(
@@ -668,18 +868,43 @@ def mark_attendance(request, course_id):
     )
 
     course = get_object_or_404(
-        Course,
-        id=course_id,
-        teacher=teacher
+        Course.objects.filter(
+            subjects__teacher=teacher
+        ).distinct(),
+        id=course_id
     )
 
     enrollments = Enrollment.objects.filter(
         course=course
-    ).select_related('student')
+    ).select_related("student")
 
+    selected_date = request.GET.get("date")
+
+
+    # Load existing attendance when date is selected
+    if selected_date:
+
+        for enrollment in enrollments:
+
+            try:
+
+                attendance = Attendance.objects.get(
+                    course=course,
+                    student=enrollment.student,
+                    date=selected_date
+                )
+
+                enrollment.attendance_status = attendance.status
+
+            except Attendance.DoesNotExist:
+
+                enrollment.attendance_status = None
+
+
+    # Save attendance
     if request.method == "POST":
 
-        date = request.POST.get("date")
+        selected_date = request.POST.get("date")
 
         for enrollment in enrollments:
 
@@ -692,29 +917,117 @@ def mark_attendance(request, course_id):
             Attendance.objects.update_or_create(
                 course=course,
                 student=student,
-                date=date,
+                date=selected_date,
                 defaults={
-                    'status': status == 'present'
+                    "status": status == "present"
                 }
             )
 
-        messages.success(
-            request,
-            "Attendance saved successfully."
+        return redirect(
+            reverse(
+                "college:mark_attendance",
+                args=[course.id]
+            ) + f"?date={selected_date}"
         )
 
-        return redirect(
-            'college:mark_attendance',
-            course_id=course.id
-        )
+    today = timezone.localdate()
+    return render(
+        request,
+        "teacher/mark_attendance.html",
+        {
+            "course": course,
+            "enrollments": enrollments,
+            "selected_date": selected_date,
+            "today": today,
+        }
+    )
+
+@login_required
+def attendance_history(request):
+
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
+
+    courses = Course.objects.filter(
+        teacher=teacher
+    )
 
     return render(
         request,
-        'teacher/mark_attendance.html',
+        "teacher/attendance_history.html",
         {
-            'course': course,
-            'enrollments': enrollments,
-            'today': timezone.now().date()
+            "courses": courses
+        }
+    )
+
+@login_required
+def attendance_dates(request, course_id):
+
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
+
+    course = get_object_or_404(
+        Course,
+        id=course_id,
+        teacher=teacher
+    )
+
+    dates = Attendance.objects.filter(
+        course=course
+    ).values_list(
+        "date",
+        flat=True
+    ).distinct().order_by("-date")
+
+    return render(
+        request,
+        "teacher/attendance_dates.html",
+        {
+            "course": course,
+            "dates": dates
+        }
+    )
+
+from datetime import datetime
+
+
+@login_required
+def attendance_detail(request, course_id, date):
+
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
+
+    course = get_object_or_404(
+        Course,
+        id=course_id,
+        teacher=teacher
+    )
+
+    attendance_date = datetime.strptime(
+        date,
+        "%Y-%m-%d"
+    ).date()
+
+    attendances = Attendance.objects.filter(
+        course=course,
+        date=attendance_date
+    ).select_related(
+        "student"
+    )
+
+    return render(
+        request,
+        "teacher/attendance_detail.html",
+        {
+            "course": course,
+            "attendance_date": attendance_date,
+            "attendances": attendances
         }
     )
 
@@ -770,5 +1083,198 @@ def my_attendance(request):
         'student/my_attendance.html',
         {
             'attendance_data': attendance_data
+        }
+    )
+
+def courses(request):
+    c = Course.objects.all()
+    return render(request, 'courses.html', {'courses':c})
+
+def departments(request):
+    d = Department.objects.all()
+    return render(request, 'departments.html', {'departments':d})
+
+def contact(request):
+    return render(request, 'contact.html')
+
+@login_required
+def teacher_profile(request):
+    return render(request, 'teacher_profile.html')
+
+@login_required
+def student_profile(request):
+    return render(request, 'student_profile.html')
+
+@login_required
+def edit_teacher_profile(request):
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
+    if request.method == "POST":
+
+        user_form = UserUpdateForm(
+            request.POST,
+            instance=request.user
+        )
+
+        teacher_form = TeacherProfileForm(
+            request.POST,
+            instance=teacher
+        )
+
+        if user_form.is_valid() and teacher_form.is_valid():
+
+            user_form.save()
+            teacher_form.save()
+
+            return redirect('college:teacher_profile')
+
+    else:
+
+        user_form = UserUpdateForm(
+            instance=request.user
+        )
+
+        teacher_form = TeacherProfileForm(
+            instance=teacher
+        )
+
+    return render(
+        request,
+        'edit_teacher_profile.html',
+        {
+            'user_form': user_form,
+            'teacher_form': teacher_form
+        }
+    )
+
+@login_required
+def edit_student_profile(request):
+
+    student = Student.objects.get(user=request.user)
+
+    if request.method == "POST":
+
+        user_form = UserUpdateForm(
+            request.POST,
+            instance=request.user
+        )
+
+        student_form = StudentProfileForm(
+            request.POST,
+            instance=student
+        )
+
+        if user_form.is_valid() and student_form.is_valid():
+
+            user_form.save()
+            student_form.save()
+
+            return redirect('college:student_profile')
+
+    else:
+
+        user_form = UserUpdateForm(instance=request.user)
+
+        student_form = StudentProfileForm(instance=student)
+
+    return render(
+        request,
+        'edit_student_profile.html',
+        {
+            'user_form': user_form,
+            'student_form': student_form
+        }
+    )
+
+@login_required
+def hod_dashboard(request):
+
+    hod = get_object_or_404(
+        HOD,
+        user=request.user
+    )
+
+    subjects = Subject.objects.filter(
+        course__department=hod.department
+    ).select_related(
+        'course',
+        'teacher',
+        'teacher__user'
+    ).order_by(
+        'course__course_name',
+        'semester',
+        'subject_name'
+    )
+
+    teachers = Teacher.objects.filter(
+        department=hod.department
+    ).select_related('user')
+
+    return render(
+        request,
+        'hod_dashboard.html',
+        {
+            'hod': hod,
+            'subjects': subjects,
+            'teachers': teachers,
+        }
+    )
+
+@login_required
+def assign_subject(request, subject_id):
+
+    # Get logged-in HOD
+    hod = get_object_or_404(
+        HOD,
+        user=request.user
+    )
+
+    # Get subject only if it belongs to HOD's department
+    subject = get_object_or_404(
+        Subject,
+        id=subject_id,
+        course__department=hod.department
+    )
+
+    # Get teachers only from HOD's department
+    teachers = Teacher.objects.filter(
+        department=hod.department
+    )
+
+    if request.method == "POST":
+
+        teacher_id = request.POST.get("teacher")
+
+        teacher = get_object_or_404(
+            Teacher,
+            id=teacher_id,
+            department=hod.department
+        )
+
+        # Assign teacher to subject
+        subject.teacher = teacher
+        subject.save()
+
+        teacher_name = (
+            teacher.user.get_full_name()
+            or teacher.user.username
+        )
+
+        messages.success(
+            request,
+            f"{subject.subject_name} has been assigned to "
+            f"{teacher_name}."
+        )
+
+        return redirect("college:hod_dashboard")
+
+    return render(
+        request,
+        "assign_subject.html",
+        {
+            "subject": subject,
+            "teachers": teachers,
         }
     )

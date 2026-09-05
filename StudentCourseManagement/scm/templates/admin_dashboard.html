@@ -14,7 +14,7 @@
 					<div class="col-60 d-flex">
 						<nav id="main-menu">
 							<ul>
-								<li><a href="{% url 'college:student_dashboard' %}">Home</a></li>
+								<li><a href="{% url 'college:admin_dashboard' %}">Home</a></li>
 								<li><a href="{% url 'college:department_list' %}">Departments</a></li>
                                 <li><a href="{% url 'college:teacher_list' %}">Teachers</a></li>
                                 <li><a href="{% url 'college:student_list' %}">Students</a></li>
@@ -39,9 +39,9 @@
 		<!-- END NAVBAR -->
 {% endblock %}
 {% block content %}
-<h1>Admin Dashboard</h1>
+<h1 class="text-center">Admin Dashboard</h1>
 
-<h3>Welcome {{ request.user.username }}</h3>
+<h3 class="text-center">Welcome {{ request.user.username }}</h3>
 <section class="home_bg hb_height" style="background-image: url({% static '/img/bg/home-bg.jpg' %});  background-size:cover; background-position: center center;">
 			<div class="container">
 				<div class="row">

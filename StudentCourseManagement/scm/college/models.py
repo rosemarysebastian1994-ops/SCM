@@ -9,6 +9,20 @@ class Department(models.Model):
     def __str__(self):
         return self.name
 
+class HOD(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    department = models.OneToOneField(
+        Department,
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return self.user.get_full_name() or self.user.username
+
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -50,17 +64,36 @@ class Course(models.Model):
 
     course_code = models.CharField(max_length=20)
 
-    teacher = models.ForeignKey(
-        Teacher,
-        on_delete=models.CASCADE
-    )
-
     description = models.TextField()
 
     credits = models.IntegerField()
 
     def __str__(self):
         return self.course_name
+
+class Subject(models.Model):
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="subjects"
+    )
+    subject_name = models.CharField(max_length=100)
+    subject_code = models.CharField(max_length=20, default=0)
+    description = models.TextField(blank=True)
+    semester = models.CharField(max_length=20, default="S1")
+    credits = models.IntegerField(default=100)
+    teacher = models.ForeignKey(
+        Teacher,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='subjects'
+    )
+    class Meta:
+        ordering = ['semester']
+
+    def __str__(self):
+        return self.subject_name
 
 class Enrollment(models.Model):
     student = models.ForeignKey(
@@ -90,9 +123,10 @@ class Enrollment(models.Model):
         return f"{self.student} - {self.course}"
 
 class Assignment(models.Model):
-    course = models.ForeignKey(
-        Course,
-        on_delete=models.CASCADE
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.CASCADE,
+        related_name='assignments'
     )
 
     title = models.CharField(max_length=200)

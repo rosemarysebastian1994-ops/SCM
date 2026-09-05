@@ -4,74 +4,121 @@
 
 <div class="container mt-4">
 
-    <h2>My Courses</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <table class="table table-bordered table-hover">
+        <div>
+            <h2>My Assigned Subjects</h2>
+            <p class="text-muted mb-0">
+                Subjects assigned to you by the Head of Department.
+            </p>
+        </div>
 
-        <thead class="table-dark">
+    </div>
 
-            <tr>
-                <th>Course Code</th>
-                <th>Course Name</th>
-                <th>Department</th>
-                <th>Credits</th>
-                <th>Assignments</th>
-                <th>View</th>
-            </tr>
 
-        </thead>
+    <div class="card shadow-sm border-0">
 
-        <tbody>
+        <div class="card-body">
 
-        {% for course in courses %}
+            <div class="table-responsive">
 
-            <tr>
+                <table class="table table-bordered table-hover align-middle">
 
-                <td>{{ course.course_code }}</td>
+                    <thead class="table-dark">
 
-                <td>{{ course.course_name }}</td>
+                        <tr>
+                            <th>Subject Code</th>
+                            <th>Subject Name</th>
+                            <th>Course</th>
+                            <th>Semester</th>
+                            <th>Department</th>
+                            <th>Credits</th>
+                            <th>Assignments</th>
+                            <th>View</th>
+                        </tr>
 
-                <td>{{ course.department.name }}</td>
+                    </thead>
 
-                <td>{{ course.credits }}</td>
+                    <tbody>
 
-                <td>
+                    {% for subject in subjects %}
 
-                    <a
-                        class="btn btn-success btn-sm"
-                        href="{% url 'college:create_assignment' course.id %}">
+                        <tr>
 
-                        Create Assignment
+                            <td>
+                                {{ subject.subject_code }}
+                            </td>
 
-                    </a>
+                            <td class="fw-semibold">
+                                {{ subject.subject_name }}
+                            </td>
 
-                </td>
-                <td>
-                    <a href="{% url 'college:course_assignments' course.id %}"
-   class="btn btn-info btn-sm">
-    View Assignments
-</a>
-                </td>
+                            <td>
+                                {{ subject.course.course_name }}
+                            </td>
 
-            </tr>
+                            <td>
+                                {{ subject.semester }}
+                            </td>
 
-        {% empty %}
+                            <td>
+                                {{ subject.course.department.name }}
+                            </td>
 
-            <tr>
+                            <td>
+                                {{ subject.credits }}
+                            </td>
 
-                <td colspan="6" class="text-center">
 
-                    No courses assigned.
+                            <td>
 
-                </td>
+                                <!-- We will update this in Step 3 -->
+                                <a
+                                    class="btn btn-success btn-sm"
+                                    href="{% url 'college:create_assignment' subject.id %}">
 
-            </tr>
+                                    Create Assignment
 
-        {% endfor %}
+                                </a>
 
-        </tbody>
+                            </td>
 
-    </table>
+
+                            <td>
+
+                            <a href="{% url 'college:course_assignments' subject.id %}"
+                               class="btn btn-primary btn-sm">
+                                View Assignments
+                            </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td colspan="8"
+                                class="text-center text-muted py-4">
+
+                                No subjects have been assigned yet.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

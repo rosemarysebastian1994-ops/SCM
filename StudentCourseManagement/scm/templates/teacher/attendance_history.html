@@ -1,0 +1,48 @@
+{% extends "teacher_dashboard.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2>Attendance History</h2>
+
+    <div class="row mt-4">
+
+        {% for course in courses %}
+
+        <div class="col-md-4 mb-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body">
+
+                    <h5>{{ course.course_name }}</h5>
+
+                    <p>
+                        {{ course.course_code }}
+                    </p>
+
+                    <a href="{% url 'college:attendance_dates' course.id %}"
+                       class="btn btn-primary">
+
+                        View History
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <p>No courses found.</p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

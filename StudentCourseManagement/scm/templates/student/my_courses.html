@@ -27,7 +27,64 @@
 
                 <td>{{ enrollment.course.course_code }}</td>
 
-                <td>{{ enrollment.course.course_name }}</td>
+                <td>
+    <div class="mb-2">
+
+        <!-- Course Name -->
+        <a href="#"
+           class="text-decoration-none fw-bold"
+           data-bs-toggle="collapse"
+           data-bs-target="#subjects-{{ enrollment.course.id }}"
+           aria-expanded="false">
+
+            {{ enrollment.course.course_name }}
+            <span>▼</span>
+        </a>
+
+        <!-- Hidden Subjects -->
+        <div class="collapse mt-2"
+             id="subjects-{{ enrollment.course.id }}">
+
+            <div class="card card-body bg-light">
+
+                <table>
+                <tr>
+                <th>Semester</th>
+                <th>Subject</th>
+                <th>Credits</th>
+                    </tr>
+            {% for subject in enrollment.course.subjects.all %}
+                <tr>
+                    <td>
+                <div class="border-bottom py-1">
+                    {{ subject.semester }}
+                </div>
+                    </td>
+                <td>
+                <div class="border-bottom py-1">
+                    {{ subject.subject_name }}
+                </div>
+                </td>
+                    <td>
+                <div class="border-bottom py-1">
+                    {{ subject.credits }}
+                </div>
+                </td>
+                    </tr>
+
+            {% empty %}
+                <p class="text-muted mb-0">
+                    No subjects available.
+                </p>
+            {% endfor %}
+</table>
+
+            </div>
+
+        </div>
+
+    </div>
+</td>
 
                 <td>{{ enrollment.course.credits }}</td>
 

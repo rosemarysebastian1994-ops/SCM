@@ -14,8 +14,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path
+from django.urls import path, reverse_lazy
 from . import views
+from django.contrib.auth import views as auth_views
 
 app_name='college'
 urlpatterns = [
@@ -47,7 +48,7 @@ urlpatterns = [
     path('enrollments/delete/<int:i>/', views.enrollment_delete, name='enrollment_delete'),
     path('student/my-courses', views.my_courses, name='my_courses'),
     path('teacher/students', views.teacher_students, name='teacher_students'),
-    path('course/<int:course_id>/assignment/add/',views.create_assignment,name='create_assignment'),
+    path('subject/<int:subject_id>/assignment/add/',views.create_assignment,name='create_assignment'),
     path('teacher/courses', views.teacher_courses, name='teacher_courses'),
     path("student/assignments/",views.student_assignments,name="student_assignments"),
     path("assignment/<int:assignment_id>/submit/",views.submit_assignment,name="submit_assignment"),
@@ -62,4 +63,34 @@ urlpatterns = [
     path('attendance/select-course/', views.select_course_attendance, name='select_course_attendance'),
     path('attendance/mark/<int:course_id>/',views.mark_attendance,name='mark_attendance'),
     path('student/my_attendance/', views.my_attendance, name='my_attendance'),
+    path('courses', views.courses, name='courses'),
+    path('departments', views.departments, name='departments'),
+    path('contact', views.contact, name='contact'),
+    path("attendance/history/", views.attendance_history, name="attendance_history"),
+    path("attendance/history/<int:course_id>/", views.attendance_dates,name="attendance_dates"),
+    path("attendance/history/<int:course_id>/<str:date>/", views.attendance_detail, name="attendance_detail"),
+    path("teacher_profile/", views.teacher_profile, name="teacher_profile"),
+    path("student_profile", views.student_profile, name="student_profile"),
+    path('teacher_profile/edit/', views.edit_teacher_profile, name='edit_teacher_profile'),
+    path('student_profile/edit/', views.edit_student_profile, name='edit_student_profile'),
+    path(
+        'password-change/',
+        auth_views.PasswordChangeView.as_view(
+            template_name='password_change.html',
+            success_url=reverse_lazy(
+                'college:password_change_done'
+            )
+        ),
+        name='password_change'
+    ),
+
+    path(
+        'password-change/done/',
+        auth_views.PasswordChangeDoneView.as_view(
+            template_name='password_change_done.html'
+        ),
+        name='password_change_done'
+    ),
+    path('hod_dashboard', views.hod_dashboard, name='hod_dashboard'),
+    path('hod/assign-subject/<int:subject_id>/', views.assign_subject, name='assign_subject'),
 ]

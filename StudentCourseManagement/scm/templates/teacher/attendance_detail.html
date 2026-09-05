@@ -1,0 +1,91 @@
+{% extends "teacher_dashboard.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2>Attendance Details</h2>
+
+    <div class="card mb-4">
+
+        <div class="card-body">
+
+            <h4>{{ course.course_name }}</h4>
+
+            <p>
+                <strong>Date:</strong>
+                {{ attendance_date }}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <table class="table table-bordered">
+
+        <thead class="table-dark">
+
+            <tr>
+
+                <th>#</th>
+                <th>Student</th>
+                <th>Status</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for attendance in attendances %}
+
+            <tr>
+
+                <td>
+                    {{ forloop.counter }}
+                </td>
+
+                <td>
+                    {{ attendance.student }}
+                </td>
+
+                <td>
+
+                    {% if attendance.status %}
+
+                        <span class="badge bg-success">
+                            Present
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-danger">
+                            Absent
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+
+                <td colspan="3">
+                    No attendance records found.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

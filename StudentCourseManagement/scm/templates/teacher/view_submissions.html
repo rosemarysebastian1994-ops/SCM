@@ -2,95 +2,137 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container mt-5">
 
-<h2>{{ assignment.title }}</h2>
+    <div class="card shadow">
 
-<h5>{{ assignment.course.name }}</h5>
+        <div class="card-header">
+            <h3 class="mb-0">
+                Submissions
+            </h3>
+        </div>
 
-<table class="table table-bordered">
+        <div class="card-body">
 
-<thead>
+            <h4>{{ assignment.title }}</h4>
 
-<tr>
+            <p class="text-muted">
+                Subject:
+                <strong>
+                    {{ assignment.subject.subject_name }}
+                </strong>
+            </p>
 
-<th>Student</th>
-<th>Submitted On</th>
-<th>Download</th>
-<th>Marks</th>
-<th>Action</th>
+            <p>
+                <strong>Due Date:</strong>
+                {{ assignment.due_date }}
+            </p>
 
-</tr>
+            <hr>
 
-</thead>
+            {% if submissions %}
 
-<tbody>
+            <div class="table-responsive">
 
-{% for submission in submissions %}
+                <table class="table table-bordered table-hover align-middle">
 
-<tr>
+                    <thead class="table-dark">
 
-<td>{{ submission.student.user.username }}</td>
+                        <tr>
+                            <th>Student</th>
+                            <th>Submitted At</th>
+                            <th>File</th>
+                            <th>Grade</th>
+                            <th>Action</th>
+                        </tr>
 
-<td>{{ submission.submitted_on }}</td>
+                    </thead>
 
-<td>
+                    <tbody>
 
-<a href="{{ submission.file.url }}"
-class="btn btn-primary btn-sm">
+                        {% for submission in submissions %}
 
-Download
+                        <tr>
 
-</a>
+                            <td>
+                                {{ submission.student }}
+                            </td>
 
-</td>
+                            <td>
+                                {{ submission.submitted_on }}
+                            </td>
 
-<td>
+                            <td>
 
-{% if submission.marks %}
+                                {% if submission.file %}
 
-{{ submission.marks }}
+                                <a href="{{ submission.file.url }}"
+                                   target="_blank"
+                                   class="btn btn-sm btn-primary">
+                                    View File
+                                </a>
 
-{% else %}
+                                {% else %}
 
-Not Graded
+                                <span class="text-muted">
+                                    No file
+                                </span>
 
-{% endif %}
+                                {% endif %}
 
-</td>
+                            </td>
 
-<td>
+                            <td>
 
-<a
-class="btn btn-success btn-sm"
-href="{% url 'college:grade_submission' submission.id %}">
+                                {% if submission.marks %}
+                                    {{ submission.marks }}
+                                {% else %}
+                                    <span class="text-muted">
+                                        Not graded
+                                    </span>
+                                {% endif %}
 
-Grade
+                            </td>
 
-</a>
+                            <td>
 
-</td>
+                                <a href="{% url 'college:grade_submission' submission.id %}"
+                                   class="btn btn-sm btn-success">
+                                    Grade
+                                </a>
 
-</tr>
+                            </td>
 
-{% empty %}
+                        </tr>
 
-<tr>
+                        {% endfor %}
 
-<td colspan="5">
+                    </tbody>
 
-No submissions yet.
+                </table>
 
-</td>
+            </div>
 
-</tr>
+            {% else %}
 
-{% endfor %}
+            <div class="alert alert-info">
+                No students have submitted this assignment yet.
+            </div>
 
-</tbody>
+            {% endif %}
 
-</table>
+        </div>
+
+    </div>
 
 </div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
 
 {% endblock %}

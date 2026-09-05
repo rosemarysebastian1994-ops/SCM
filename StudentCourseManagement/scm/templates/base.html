@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load group_tags %}
 <html lang="en">
 
 	<head>
@@ -124,91 +125,85 @@
 
 </div>
     <!-- START FOOTER -->
-		<div class="footer section-padding">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-3 col-sm-6 col-xs-12">
-						<div class="single_footer">
-							<a href="index.html"><img src="{% static 'img/logo.png' %}" alt=""></a>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vitae risus nec dui venenatis dignissim.</p>
-							<div class="social_profile">
-								<ul>
-									<li><a class="f_facebook" href="#"><i class="fa-solid fa-x"></i></a></li>
-									<li><a class="f_twitter" href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
-									<li><a class="f_instagram"href="#"><i class="fa-brands fa-instagram"></i></a></li>
-									<li><a class="f_linkedin" href="#"><i class="fa-brands fa-linkedin-in"></i></a></li>
-								</ul>
-							</div>
-						</div>
-					</div><!--- END COL -->
-					<div class="col-lg-2 col-sm-6 col-xs-12">
-						<div class="single_footer">
-							<h4>About Eduleb</h4>
-							<ul>
-								<li><a href="#">About us</a></li>
-								<li><a href="#">Instructor Registration</a></li>
-								<li><a href="#">Become A Teacher</a></li>
-								<li><a href="#">All Instrustors</a></li>
-								<li><a href="#">Asked Question</a></li>
-								<li><a href="#">Contact us</a></li>
-							</ul>
-						</div>
-					</div><!--- END COL -->
-					<div class="col-lg-2 col-sm-6 col-xs-12">
-						<div class="single_footer">
-							<h4>Popular Courses</h4>
-							<ul>
-								<li><a href="#">Development</a></li>
-								<li><a href="#">Arts & design</a></li>
-								<li><a href="#">Visual Design</a></li>
-								<li><a href="#">Graphic Design</a></li>
-								<li><a href="#">Code Inspection</a></li>
-								<li><a href="#">Digital Marketing</a></li>
-							</ul>
-						</div>
-					</div><!--- END COL -->
-					<div class="col-lg-3 col-sm-6 col-xs-12">
-						<div class="single_footer">
-							<h4>Contact Info</h4>
-							<div class="sf_contact">
-								<span class="ti-map"></span>
-								<p>2570 Quadra Street Victoria Road, New York, Canada</p>
-							</div>
-							<div class="sf_contact">
-								<span class="ti-mobile"></span>
-								<p>+88 457 845 695</p>
-							</div>
-							<div class="sf_contact">
-								<span class="ti-mobile"></span>
-								<p><a href="tel:+88457845695">Contact Whatsapp</a></p>
-							</div>
-							<div class="sf_contact">
-								<span class="ti-email"></span>
-								<p>example@yourmail.com</p>
-							</div>
-						</div>
-					</div><!--- END COL -->
-					<div class="col-lg-2 col-sm-6 col-xs-12">
-						<div class="single_footer">
-							<h4>Download App</h4>
-							<p>Download our app from app store and goole play store.</p>
-							<a href="index.html"><img src="{% static 'img/google-play.jpg' %}" class="foot_img" alt=""></a>
-							<a href="index.html"><img src="{% static 'img/app-store.jpg' %}" class="foot_img" alt=""></a>
-						</div>
-					</div><!--- END COL -->
-				</div><!--- END ROW -->
-			</div><!--- END CONTAINER -->
-		</div>
-		<!-- END FOOTER -->
+<footer class="bg-dark text-white pt-5 pb-3 mt-5">
+    <div class="container">
+        <div class="row">
 
-		<!-- START FOOTER COPYRIGHT -->
-		<div class="foot_copy">
-			<div class="footer_copyright">
-				<p>&copy; 2024. All Rights Reserved by <a href="https://bestwpware.com/">Bestwpware</a> • Distributed by <a href="https://themewagon.com">ThemeWagon</a></p>
-			</div>
-		</div>
-		<!-- END FOOTER COPYRIGHT -->
+            <!-- About -->
+            <div class="col-md-4 mb-4">
+                <h5 class="text-light">Student Course Management</h5>
+                <p class="text-white-50">
+                    A simple platform to manage courses, students,
+                    assignments, attendance, and academic activities.
+                </p>
+            </div>
 
+            <!-- Quick Links -->
+            <div class="col-md-3 mb-4">
+                <h5 class="text-light">Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'college:home' %}" class="text-white-50 text-decoration-none">Home</a></li>
+                    <li><a href="{% url 'college:courses' %}" class="text-white-50 text-decoration-none">Courses</a></li>
+                    <li><a href="{% url 'college:departments' %}" class="text-white-50 text-decoration-none">Departments</a></li>
+                    <li><a href="{% url 'college:contact' %}" class="text-white-50 text-decoration-none">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Portal -->
+            <div class="col-md-2 mb-4">
+                <h5 class="text-light">Portal</h5>
+                <ul class="list-unstyled">
+					{% if user|has_group:"Teacher" %}
+						<li>
+							<a href="{% url 'college:teacher_dashboard' %}"
+							   class="text-white-50 text-decoration-none">
+								Dashboard
+							</a>
+						</li>
+
+					{% elif user|has_group:"Student" %}
+						<li>
+							<a href="{% url 'college:student_dashboard' %}"
+							   class="text-white-50 text-decoration-none">
+								Dashboard
+							</a>
+						</li>
+					{% endif %}
+					{% if user.is_authenticated %}
+						{% if request.user|has_group:"Teacher" %}
+							<li><a href="{% url 'college:teacher_profile' %}" class="text-white-50 text-decoration-none">
+								My Profile
+							</a></li>
+
+						{% elif request.user|has_group:"Student" %}
+							<li><a href="{% url 'college:student_profile' %}" class="text-white-50 text-decoration-none">
+								My Profile
+							</a></li>
+						{% endif %}
+    				<li><a href="{% url 'college:logout' %}" class="text-white-50 text-decoration-none">Logout</a></li>
+					{% else %}
+    				<li><a href="{% url 'college:login' %}" class="text-white-50 text-decoration-none">Login</a></li>
+					{% endif %}
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div class="col-md-3 mb-4">
+                <h5 class="text-light">Contact Us</h5>
+                <p class="text-white-50 mb-1">📧 support@scms.com</p>
+                <p class="text-white-50 mb-1">📞 +91 7876 678454</p>
+                <p class="text-white-50">📍 Kerala, India</p>
+            </div>
+
+        </div>
+
+        <hr class="border-secondary">
+
+        <div class="text-center text-white-50">
+            © 2026 Student Course Management System. All Rights Reserved.
+        </div>
+    </div>
+</footer>
 	<!-- Latest jQuery -->
 		<script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
 	<!-- Latest compiled and minified Bootstrap -->
