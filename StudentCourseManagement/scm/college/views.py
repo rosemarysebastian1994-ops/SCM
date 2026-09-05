@@ -1084,7 +1084,6 @@ def my_attendance(request):
             'attendance_data': attendance_data
         }
     )
-<<<<<<< HEAD
 
 def courses(request):
     c = Course.objects.all()
@@ -1276,7 +1275,4 @@ def assign_subject(request, subject_id):
         {
             "subject": subject,
             "teachers": teachers,
-        }
-    )
-=======
->>>>>>> 9462714 (Update views and settings)
+        })    

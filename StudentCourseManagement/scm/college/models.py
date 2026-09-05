@@ -126,8 +126,7 @@ class Assignment(models.Model):
     subject = models.ForeignKey(
         Subject,
         on_delete=models.CASCADE,
-        related_name='assignments'
-    )
+        related_name='assignments')
 
     title = models.CharField(max_length=200)
 
