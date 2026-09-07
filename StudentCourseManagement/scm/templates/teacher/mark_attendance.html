@@ -12,8 +12,8 @@
             </h3>
 
             <p class="mb-0">
-                Course:
-                <strong>{{ course.course_name }}</strong>
+                Subject:
+                <strong>{{ subject.subject_name }}</strong>
             </p>
         </div>
 
@@ -34,7 +34,7 @@
                         name="date"
                         id="attendance_date"
                         class="form-control"
-                        value="{{ selected_date|default:'' }}"
+                        value="{{ selected_date }}"
                         max="{{ today|date:'Y-m-d' }}"
                         required
                     >

@@ -9,7 +9,7 @@
     </h2>
 
     <h4 class="text-muted">
-        {{ course.course_name }}
+        {{ subject.subject_name }}
     </h4>
 
     <hr>
@@ -20,7 +20,7 @@
 
             {% for date in dates %}
 
-            <a href="{% url 'college:attendance_detail' course.id date|date:'Y-m-d' %}"
+            <a href="{% url 'college:attendance_detail' subject.id date|date:'Y-m-d' %}"
                class="list-group-item list-group-item-action">
 
                 Attendance - {{ date }}

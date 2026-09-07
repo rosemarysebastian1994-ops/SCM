@@ -8,21 +8,34 @@
 
     <div class="row mt-4">
 
-        {% for course in courses %}
+        {% for subject in subjects %}
 
         <div class="col-md-4 mb-3">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm h-100">
 
                 <div class="card-body">
 
-                    <h5>{{ course.course_name }}</h5>
+                    <h5>
+                        {{ subject.subject_name }}
+                    </h5>
 
-                    <p>
-                        {{ course.course_code }}
+                    <p class="mb-1">
+                        <strong>Subject Code:</strong>
+                        {{ subject.subject_code }}
                     </p>
 
-                    <a href="{% url 'college:attendance_dates' course.id %}"
+                    <p class="mb-1">
+                        <strong>Course:</strong>
+                        {{ subject.course.course_name }}
+                    </p>
+
+                    <p class="mb-3">
+                        <strong>Semester:</strong>
+                        {{ subject.semester }}
+                    </p>
+
+                    <a href="{% url 'college:attendance_dates' subject.id %}"
                        class="btn btn-primary">
 
                         View History
@@ -37,7 +50,9 @@
 
         {% empty %}
 
-        <p>No courses found.</p>
+        <p class="text-muted">
+            No subjects assigned to you.
+        </p>
 
         {% endfor %}
 

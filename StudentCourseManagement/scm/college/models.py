@@ -106,6 +106,8 @@ class Enrollment(models.Model):
         on_delete=models.CASCADE
     )
 
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True, blank=True)
+
     enrollment_date = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -169,9 +171,11 @@ class Attendance(models.Model):
         on_delete=models.CASCADE
     )
 
-    course = models.ForeignKey(
-        Course,
-        on_delete=models.CASCADE
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
     )
 
     date = models.DateField()
@@ -179,7 +183,7 @@ class Attendance(models.Model):
     status = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('course', 'student', 'date')
+        unique_together = ('student', 'subject', 'date')
 
     def __str__(self):
-        return f"{self.student} - {self.course} - {self.date}"
+        return f"{self.student} - {self.subject} - {self.date}"

@@ -9,12 +9,12 @@ def home(request):
     user = request.user
     if user.is_superuser:
         return redirect('college:admin_dashboard')
+    elif user.groups.filter(name='HOD').exists():
+        return redirect('college:hod_dashboard')
     elif user.groups.filter(name='Teacher').exists():
         return redirect('college:teacher_dashboard')
     elif user.groups.filter(name='Student').exists():
         return redirect('college:student_dashboard')
-    elif user.groups.filter(name='HOD').exists():
-        return redirect('college:hod_dashboard')
     else:
         pass
     return render(request, 'home.html')
@@ -40,12 +40,12 @@ def login_user(request):
             login(request, user)
             if user.is_superuser:
                 return redirect('college:admin_dashboard')
+            elif user.groups.filter(name='HOD').exists():
+                return redirect('college:hod_dashboard')
             elif user.groups.filter(name='Teacher').exists():
                 return redirect('college:teacher_dashboard')
             elif user.groups.filter(name='Student').exists():
                 return redirect('college:student_dashboard')
-            elif user.groups.filter(name='HOD').exists():
-                return redirect('college:hod_dashboard')
             else:
                 return redirect('college:home')
         else:
@@ -233,23 +233,24 @@ def my_courses(request):
 
 @login_required
 def teacher_students(request):
-
     teacher = get_object_or_404(
         Teacher,
         user=request.user
     )
 
-    # Get courses that have subjects assigned to this teacher
-    courses = Course.objects.filter(
-        subjects__teacher=teacher
-    ).distinct()
-
-    # Get enrollments for those courses
-    enrollments = Enrollment.objects.filter(
-        course__in=courses
-    ).select_related(
-        'student',
-        'course'
+    # Only students enrolled in subjects taught by this teacher
+    enrollments = (
+        Enrollment.objects
+        .filter(subject__teacher=teacher)
+        .select_related(
+            'student',
+            'subject',
+            'course'
+        )
+        .order_by(
+            'subject__subject_name',
+            'student__user__first_name'
+        )
     )
 
     return render(
@@ -845,60 +846,68 @@ def chatbot(request):
             "response": "Sorry, something went wrong. Please try again."
         }, status=500)
 
-def select_course_attendance(request):
-    teacher = Teacher.objects.get(user=request.user)
-
-    courses = Course.objects.filter(
-        subjects__teacher=teacher
-    ).distinct()
-
-    return render(request, 'teacher/select_course_attendance.html', {
-        'courses': courses
-    })
-
-
-from django.urls import reverse
 @login_required
-def mark_attendance(request, course_id):
+def select_course_attendance(request):
 
     teacher = get_object_or_404(
         Teacher,
         user=request.user
     )
 
-    course = get_object_or_404(
-        Course.objects.filter(
-            subjects__teacher=teacher
-        ).distinct(),
-        id=course_id
+    subjects = Subject.objects.filter(
+        teacher=teacher
+    ).select_related('course')
+
+    return render(
+        request,
+        'teacher/select_course_attendance.html',
+        {
+            'subjects': subjects
+        }
+    )
+
+from django.urls import reverse
+@login_required
+def mark_attendance(request, subject_id):
+
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
+
+    subject = get_object_or_404(
+        Subject,
+        id=subject_id,
+        teacher=teacher
     )
 
     enrollments = Enrollment.objects.filter(
-        course=course
+        course=subject.course
     ).select_related("student")
 
     selected_date = request.GET.get("date")
+    today = timezone.localdate()
 
+    # Default to today's date
+    if not selected_date:
+        selected_date = timezone.localdate().isoformat()
 
-    # Load existing attendance when date is selected
-    if selected_date:
+    # Load existing attendance
+    for enrollment in enrollments:
 
-        for enrollment in enrollments:
+        try:
 
-            try:
+            attendance = Attendance.objects.get(
+                subject=subject,
+                student=enrollment.student,
+                date=selected_date
+            )
 
-                attendance = Attendance.objects.get(
-                    course=course,
-                    student=enrollment.student,
-                    date=selected_date
-                )
+            enrollment.attendance_status = attendance.status
 
-                enrollment.attendance_status = attendance.status
+        except Attendance.DoesNotExist:
 
-            except Attendance.DoesNotExist:
-
-                enrollment.attendance_status = None
-
+            enrollment.attendance_status = None
 
     # Save attendance
     if request.method == "POST":
@@ -914,7 +923,7 @@ def mark_attendance(request, course_id):
             )
 
             Attendance.objects.update_or_create(
-                course=course,
+                subject=subject,
                 student=student,
                 date=selected_date,
                 defaults={
@@ -925,16 +934,16 @@ def mark_attendance(request, course_id):
         return redirect(
             reverse(
                 "college:mark_attendance",
-                args=[course.id]
+                args=[subject.id]
             ) + f"?date={selected_date}"
         )
 
-    today = timezone.localdate()
     return render(
         request,
         "teacher/mark_attendance.html",
         {
-            "course": course,
+            "subject": subject,
+            "course": subject.course,
             "enrollments": enrollments,
             "selected_date": selected_date,
             "today": today,
@@ -949,34 +958,41 @@ def attendance_history(request):
         user=request.user
     )
 
-    courses = Course.objects.filter(
+    subjects = Subject.objects.filter(
         teacher=teacher
+    ).select_related(
+        'course'
+    ).order_by(
+        'course__course_name',
+        'semester',
+        'subject_name'
     )
 
     return render(
         request,
         "teacher/attendance_history.html",
         {
-            "courses": courses
+            "subjects": subjects
         }
     )
 
 @login_required
-def attendance_dates(request, course_id):
+def attendance_dates(request, subject_id):
 
     teacher = get_object_or_404(
         Teacher,
         user=request.user
     )
 
-    course = get_object_or_404(
-        Course,
-        id=course_id,
+    # Ensure this subject is assigned to the logged-in teacher
+    subject = get_object_or_404(
+        Subject,
+        id=subject_id,
         teacher=teacher
     )
 
     dates = Attendance.objects.filter(
-        course=course
+        subject=subject
     ).values_list(
         "date",
         flat=True
@@ -986,7 +1002,7 @@ def attendance_dates(request, course_id):
         request,
         "teacher/attendance_dates.html",
         {
-            "course": course,
+            "subject": subject,
             "dates": dates
         }
     )
@@ -995,16 +1011,17 @@ from datetime import datetime
 
 
 @login_required
-def attendance_detail(request, course_id, date):
+def attendance_detail(request, subject_id, date):
 
     teacher = get_object_or_404(
         Teacher,
         user=request.user
     )
 
-    course = get_object_or_404(
-        Course,
-        id=course_id,
+    # Ensure subject belongs to logged-in teacher
+    subject = get_object_or_404(
+        Subject,
+        id=subject_id,
         teacher=teacher
     )
 
@@ -1014,7 +1031,7 @@ def attendance_detail(request, course_id, date):
     ).date()
 
     attendances = Attendance.objects.filter(
-        course=course,
+        subject=subject,
         date=attendance_date
     ).select_related(
         "student"
@@ -1024,7 +1041,7 @@ def attendance_detail(request, course_id, date):
         request,
         "teacher/attendance_detail.html",
         {
-            "course": course,
+            "subject": subject,
             "attendance_date": attendance_date,
             "attendances": attendances
         }
@@ -1275,4 +1292,4 @@ def assign_subject(request, subject_id):
         {
             "subject": subject,
             "teachers": teachers,
-        })    
+        })

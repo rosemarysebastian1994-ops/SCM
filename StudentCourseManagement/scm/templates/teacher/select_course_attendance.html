@@ -4,31 +4,40 @@
 
 <div class="container mt-5">
 
-    <h2 class="mb-4">Select a Course to Mark Attendance</h2>
+    <h2>Select Subject</h2>
 
-    <div class="row">
+    <div class="row mt-4">
 
-        {% for course in courses %}
+        {% for subject in subjects %}
 
         <div class="col-md-4 mb-4">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm h-100">
 
                 <div class="card-body">
 
-                    <h4>{{ course.course_name }}</h4>
+                    <h5 class="card-title">
+                        {{ subject.subject_name }}
+                    </h5>
 
                     <p>
-                        Course Code:
-                        <strong>{{ course.course_code }}</strong>
+                        <strong>Code:</strong>
+                        {{ subject.subject_code }}
                     </p>
 
-                    <a
-                        href="{% url 'college:mark_attendance' course.id %}"
-                        class="btn btn-primary">
+                    <p>
+                        <strong>Course:</strong>
+                        {{ subject.course.course_name }}
+                    </p>
 
+                    <p>
+                        <strong>Semester:</strong>
+                        {{ subject.semester }}
+                    </p>
+
+                    <a href="{% url 'college:mark_attendance' subject.id %}"
+                       class="btn btn-primary">
                         Mark Attendance
-
                     </a>
 
                 </div>
@@ -39,7 +48,9 @@
 
         {% empty %}
 
-        <p>You don't have any courses assigned.</p>
+        <div class="alert alert-info">
+            No subjects are assigned to you.
+        </div>
 
         {% endfor %}
 

@@ -2,53 +2,64 @@
 
 {% block content %}
 
-<h2>Students Enrolled in My Courses</h2>
+<div class="container mt-4">
+    
+<h2 class="mb-4">Students Enrolled in My Subjects</h2>
 
-<table class="table table-bordered">
+<div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
 
-<thead>
+        <thead class="table-dark">
+            <tr>
+                <th>Student</th>
+                <th>Subject</th>
+                <th>Course</th>
+                <th>Department</th>
+                <th>Phone</th>
+            </tr>
+        </thead>
 
-<tr>
+        <tbody>
 
-<th>Student</th>
-<th>Course</th>
-<th>Department</th>
-<th>Phone</th>
+            {% for enrollment in enrollments %}
 
-</tr>
+            <tr>
+                <td>
+                    {{ enrollment.student.user.username }}
+                </td>
 
-</thead>
+                <td>
+                    {{ enrollment.subject.subject_name }}
+                </td>
 
-<tbody>
+                <td>
+                    {{ enrollment.course.course_name }}
+                </td>
 
-{% for enrollment in enrollments %}
+                <td>
+                    {{ enrollment.student.department.name }}
+                </td>
 
-<tr>
+                <td>
+                    {{ enrollment.student.phone }}
+                </td>
+            </tr>
 
-<td>{{ enrollment.student.user.username }}</td>
+            {% empty %}
 
-<td>{{ enrollment.course.course_name }}</td>
+            <tr>
+                <td colspan="5" class="text-center text-muted">
+                    No students are enrolled in your subjects.
+                </td>
+            </tr>
 
-<td>{{ enrollment.student.department.name }}</td>
+            {% endfor %}
 
-<td>{{ enrollment.student.phone }}</td>
+        </tbody>
 
-</tr>
+    </table>
+</div>
 
-{% empty %}
-
-<tr>
-
-<td colspan="4">
-No students enrolled.
-</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
+</div>
 
 {% endblock %}
