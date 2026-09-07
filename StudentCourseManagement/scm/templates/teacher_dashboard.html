@@ -14,7 +14,11 @@
 					<div class="col-60 d-flex">
 						<nav id="main-menu">
 							<ul>
+								{% if is_hod %}
+								<li><a href="{% url 'college:hod_dashboard' %}">Home</a></li>
+								{% else %}
 								<li><a href="{% url 'college:teacher_dashboard' %}">Home</a></li>
+								{% endif %}
 								<li><a href="{% url 'college:teacher_courses' %}">My Subjects</a></li>
                                 <li><a href="{% url 'college:teacher_students' %}">View Students</a></li>
                                 <li><a href="{% url 'college:select_course_attendance' %}">Attendance</a></li>
