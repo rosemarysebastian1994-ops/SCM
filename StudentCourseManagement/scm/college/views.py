@@ -472,7 +472,7 @@ def edit_assignment(request, assignment_id):
 
             return redirect(
                 'college:course_assignments',
-                subject_id=assignment.subject.id
+                subject_id=assignment.subject_id
             )
 
     else:
