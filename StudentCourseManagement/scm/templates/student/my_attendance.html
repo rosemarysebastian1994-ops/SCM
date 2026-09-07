@@ -2,92 +2,70 @@
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container mt-4">
+    
+<h2 class="mb-4">My Attendance</h2>
 
-    <h2 class="mb-4">
-        My Attendance
-    </h2>
+<div class="table-responsive">
 
-    <div class="card shadow">
+    <table class="table table-bordered table-hover align-middle">
 
-        <div class="card-body">
+        <thead class="table-dark">
+            <tr>
+                <th>Course</th>
+                <th>Subject</th>
+                <th>Total Classes</th>
+                <th>Present</th>
+                <th>Absent</th>
+                <th>Attendance %</th>
+            </tr>
+        </thead>
 
-            <div class="table-responsive">
+        <tbody>
 
-                <table class="table table-bordered table-hover">
+            {% for item in attendance_data %}
 
-                    <thead class="table-dark">
+            <tr>
+                <td>
+                    {{ item.course.course_name }}
+                </td>
 
-                        <tr>
-                            <th>#</th>
-                            <th>Course</th>
-                            <th>Total Classes</th>
-                            <th>Present</th>
-                            <th>Absent</th>
-                            <th>Percentage</th>
-                        </tr>
+                <td>
+                    {{ item.subject.subject_name }}
+                </td>
 
-                    </thead>
+                <td>
+                    {{ item.total_classes }}
+                </td>
 
-                    <tbody>
+                <td>
+                    {{ item.present_classes }}
+                </td>
 
-                        {% for item in attendance_data %}
+                <td>
+                    {{ item.absent_classes }}
+                </td>
 
-                        <tr>
+                <td>
+                    {{ item.percentage }}%
+                </td>
+            </tr>
 
-                            <td>
-                                {{ forloop.counter }}
-                            </td>
+            {% empty %}
 
-                            <td>
-                                {{ item.course.course_name }}
-                            </td>
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    No attendance records found.
+                </td>
+            </tr>
 
-                            <td>
-                                {{ item.total_classes }}
-                            </td>
+            {% endfor %}
 
-                            <td class="text-success">
-                                {{ item.present_classes }}
-                            </td>
+        </tbody>
 
-                            <td class="text-danger">
-                                {{ item.absent_classes }}
-                            </td>
+    </table>
 
-                            <td>
-                                <strong>
-                                    {{ item.percentage }}%
-                                </strong>
-                            </td>
-
-                        </tr>
-
-                        {% empty %}
-
-                        <tr>
-
-                            <td
-                                colspan="7"
-                                class="text-center">
-
-                                No attendance records found.
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
+</div>
 
 </div>
 

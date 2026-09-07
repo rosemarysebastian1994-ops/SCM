@@ -1,5 +1,5 @@
 {% extends 'teacher_dashboard.html' %}
-
+{% load dict_extras %}
 {% block content %}
 
 <div class="container mt-5">
@@ -69,28 +69,32 @@
 
                             <td>
 
-                                <input
-                                    type="radio"
-                                    name="status_{{ enrollment.student.id }}"
-                                    value="present"
-
-                                    {% if enrollment.attendance_status == True %}
-                                        checked
-                                    {% endif %}
-                                >
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="status_{{ enrollment.student.id }}"
+                                        value="present"
+                                        {% if attendance_dict|get_item:enrollment.student.id %}
+                                            checked
+                                        {% endif %}
+                                    >
+                                </label>
                             </td>
-
                             <td>
-
-                                <input
-                                    type="radio"
-                                    name="status_{{ enrollment.student.id }}"
-                                    value="absent"
-                                    {% if enrollment.attendance_status == False %}checked{% endif %}
-                                >
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="status_{{ enrollment.student.id }}"
+                                        value="absent"
+                                        {% if enrollment.student.id in attendance_dict %}
+                                            {% if not attendance_dict|get_item:enrollment.student.id %}
+                                                checked
+                                            {% endif %}
+                                        {% endif %}
+                                    >
+                                </label>
 
                             </td>
-
                         </tr>
 
                         {% empty %}
@@ -124,6 +128,14 @@
                 {% endif %}
 
             </form>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
 
         </div>
 

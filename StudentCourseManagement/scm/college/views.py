@@ -392,7 +392,6 @@ def submit_assignment(request, assignment_id):
 
 @login_required
 def view_submissions(request, assignment_id):
-
     teacher = get_object_or_404(
         Teacher,
         user=request.user
@@ -400,12 +399,9 @@ def view_submissions(request, assignment_id):
 
     assignment = get_object_or_404(
         Assignment,
-        id=assignment_id
+        id=assignment_id,
+        subject__teacher=teacher
     )
-
-    # Make sure this teacher teaches this subject
-    if assignment.subject.teacher != teacher:
-        return redirect('college:teacher_dashboard')
 
     submissions = Submission.objects.filter(
         assignment=assignment
@@ -422,57 +418,112 @@ def view_submissions(request, assignment_id):
         }
     )
 
+
 @login_required
-def course_assignments(request, course_id):
+def course_assignments(request, subject_id):
 
     teacher = get_object_or_404(
         Teacher,
         user=request.user
     )
 
-    course = get_object_or_404(
-        Course,
-        id=course_id
+    subject = get_object_or_404(
+        Subject,
+        id=subject_id,
+        teacher=teacher
     )
 
-    subjects = Subject.objects.filter(
-        course=course,
-        teacher=teacher
-    ).prefetch_related(
-        'assignments'
-    )
+    assignments = Assignment.objects.filter(
+        subject=subject
+    ).order_by('due_date')
 
     return render(
         request,
         'teacher/course_assignments.html',
         {
-            'course': course,
-            'subjects': subjects
+            'subject': subject,
+            'assignments': assignments
         }
     )
 
+
 @login_required
 def edit_assignment(request, assignment_id):
-    teacher = get_object_or_404(Teacher,user=request.user)
-    assignment = get_object_or_404(Assignment,id=assignment_id,course__teacher=teacher)
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
+
+    assignment = get_object_or_404(
+        Assignment,
+        id=assignment_id,
+        subject__teacher=teacher
+    )
+
     if request.method == "POST":
-        form = AssignmentForm(request.POST,instance=assignment)
+
+        form = AssignmentForm(
+            request.POST,
+            instance=assignment
+        )
+
         if form.is_valid():
             form.save()
-            return redirect('college:course_assignments',course_id=assignment.course.id)
+
+            return redirect(
+                'college:course_assignments',
+                subject_id=assignment.subject.id
+            )
+
     else:
-        form = AssignmentForm(instance=assignment)
-    return render(request,'teacher/edit_assignment.html',{'form': form,'assignment': assignment})
+
+        form = AssignmentForm(
+            instance=assignment
+        )
+
+    return render(
+        request,
+        'teacher/edit_assignment.html',
+        {
+            'form': form,
+            'assignment': assignment
+        }
+    )
+
 
 @login_required
 def delete_assignment(request, assignment_id):
-    teacher = get_object_or_404(Teacher,user=request.user)
-    assignment = get_object_or_404(Assignment,id=assignment_id,course__teacher=teacher)
+
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
+
+    assignment = get_object_or_404(
+        Assignment,
+        id=assignment_id,
+        subject__teacher=teacher
+    )
+
     if request.method == "POST":
-        course_id = assignment.course.id
+
+        subject_id = assignment.subject.id
+
         assignment.delete()
-        return redirect('college:course_assignments',course_id=course_id)
-    return render(request,'teacher/delete_assignment.html',{'assignment': assignment})
+
+        return redirect(
+            'college:course_assignments',
+            subject_id=subject_id
+        )
+
+    return render(
+        request,
+        'teacher/delete_assignment.html',
+        {
+            'assignment': assignment
+        }
+    )
+
 
 @login_required
 def grade_submission(request, submission_id):
@@ -524,6 +575,7 @@ def grade_submission(request, submission_id):
             'submission': submission
         }
     )
+
 
 @login_required
 def my_results(request):
@@ -892,34 +944,17 @@ def mark_attendance(request, subject_id):
         course=subject.course
     ).select_related("student")
 
-    selected_date = request.GET.get("date")
     today = timezone.localdate()
 
-    # Default to today's date
-    if not selected_date:
-        selected_date = timezone.localdate().isoformat()
+    # Get selected date
+    selected_date = (
+        request.GET.get("date")
+        or request.POST.get("date")
+        or today.strftime("%Y-%m-%d")
+    )
 
-    # Load existing attendance
-    for enrollment in enrollments:
-
-        try:
-
-            attendance = Attendance.objects.get(
-                subject=subject,
-                student=enrollment.student,
-                date=selected_date
-            )
-
-            enrollment.attendance_status = attendance.status
-
-        except Attendance.DoesNotExist:
-
-            enrollment.attendance_status = None
-
-    # Save attendance
+    # SAVE ATTENDANCE
     if request.method == "POST":
-
-        selected_date = request.POST.get("date")
 
         for enrollment in enrollments:
 
@@ -930,31 +965,47 @@ def mark_attendance(request, subject_id):
             )
 
             Attendance.objects.update_or_create(
-                subject=subject,
                 student=student,
+                subject=subject,
                 date=selected_date,
                 defaults={
                     "status": status == "present"
                 }
             )
 
-        return redirect(
-            reverse(
-                "college:mark_attendance",
-                args=[subject.id]
-            ) + f"?date={selected_date}"
+        messages.success(
+            request,
+            "Attendance saved successfully."
         )
+
+        # Return to same selected date
+        return redirect(
+            f"{request.path}?date={selected_date}"
+        )
+
+    # LOAD EXISTING ATTENDANCE
+    attendance_records = Attendance.objects.filter(
+        subject=subject,
+        date=selected_date
+    )
+
+    attendance_dict = {
+        attendance.student_id: attendance.status
+        for attendance in attendance_records
+    }
+
+    context = {
+        "subject": subject,
+        "enrollments": enrollments,
+        "attendance_dict": attendance_dict,
+        "selected_date": selected_date,
+        "today": today,
+    }
 
     return render(
         request,
         "teacher/mark_attendance.html",
-        {
-            "subject": subject,
-            "course": subject.course,
-            "enrollments": enrollments,
-            "selected_date": selected_date,
-            "today": today,
-        }
+        context
     )
 
 @login_required
@@ -1056,31 +1107,40 @@ def attendance_detail(request, subject_id, date):
 
 from django.db.models import Count
 
+@login_required
 def my_attendance(request):
-
     student = get_object_or_404(
         Student,
         user=request.user
     )
 
-    enrollments = Enrollment.objects.filter(
-        student=student
-    ).select_related('course')
+    enrollments = (
+        Enrollment.objects
+        .filter(
+            student=student,
+            subject__isnull=False
+        )
+        .select_related(
+            'course',
+            'subject',
+            'subject__course'
+        )
+    )
 
     attendance_data = []
 
     for enrollment in enrollments:
 
-        course = enrollment.course
+        subject = enrollment.subject
 
         total_classes = Attendance.objects.filter(
             student=student,
-            course=course
+            subject=subject
         ).count()
 
         present_classes = Attendance.objects.filter(
             student=student,
-            course=course,
+            subject=subject,
             status=True
         ).count()
 
@@ -1094,7 +1154,8 @@ def my_attendance(request):
             percentage = 0
 
         attendance_data.append({
-            'course': course,
+            'course': enrollment.course,
+            'subject': subject,
             'total_classes': total_classes,
             'present_classes': present_classes,
             'absent_classes': absent_classes,
