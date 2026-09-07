@@ -68,11 +68,17 @@ def student_dashboard(request):
 @login_required
 def teacher_dashboard(request):
     is_hod = request.user.groups.filter(name='HOD').exists()
+    print(is_hod)
     return render(request, "teacher_dashboard.html", {'is_hod':is_hod})
 
 @login_required
 def admin_dashboard(request):
     return render(request, 'admin_dashboard.html')
+
+@login_required
+def hod_dashboard(request):
+    is_hod = request.user.groups.filter(name='HOD').exists()
+    return render(request, "hod_dashboard.html", {'is_hod':is_hod})
 
 def department_list(request):
     departments = Department.objects.all()
