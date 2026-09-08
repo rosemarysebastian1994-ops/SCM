@@ -1,29 +1,543 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-<h2>Welcome to Student Course Management System</h2>
-<section class="home_bg hb_height" style="background-image: url(static/img/bg/home-bg.jpg);  background-size:cover; background-position: center center;">
-			<div class="container">
-				<div class="row">
-				  <div class="col-lg-6 col-sm-12 col-xs-12">
-					<div class="hero-text ht_top">
-						<h1><span>Smart Study</span> Where Knowledge Meets the Web</h1>
-						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, consectetur adipiscing elit tempor ut labore</p>
-					</div>
-					<div class="home_sb">
-						<form action="{% url 'college:search' %}" method='post' class="banner_subs">
-							{% csrf_token %}
-							<input type="search" name="q" class="form-control home_si" placeholder="Search your course here" required="required">
-							<button type="submit" class="subscribe__btn">Search <i class="fa fa-paper-plane-o"></i></button>
-						</form>
-					</div>
-				  </div><!--- END COL -->
-				  <div class="col-lg-6 col-sm-12 col-xs-12">
-					<div class="hero-text-img">
-						<img src="static/img/home-img2.png" class="img-fluid" alt="" />
-					</div>
-				  </div><!--- END COL -->
-				</div><!--- END ROW -->
-			</div><!--- END CONTAINER -->
-		</section>
+
+<!-- HERO SECTION -->
+
+<section
+    class="home_bg hb_height"
+    style="
+        background-image: url('{% static 'img/bg/home-bg.jpg' %}');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    ">
+
+```
+<div class="hero-overlay"></div>
+
+<div class="container position-relative">
+    <div class="row align-items-center min-vh-100 py-5">
+
+        <!-- HERO CONTENT -->
+        <div class="col-lg-6 col-md-12">
+
+            <div class="hero-text">
+
+                <span class="badge bg-primary rounded-pill px-3 py-2 mb-3">
+                    Student Course Management System
+                </span>
+
+                <h1 class="display-4 fw-bold mb-4">
+                    <span>Smart Study</span><br>
+                    Where Knowledge Meets the Web
+                </h1>
+
+                <p class="lead text-muted mb-4">
+                    A smarter way to connect students, teachers, courses,
+                    assignments, grades, and attendance in one simple
+                    academic platform.
+                </p>
+
+                <!-- ACTION BUTTONS -->
+                <div class="d-flex flex-wrap gap-3 mb-4">
+
+                    <a
+                        href="{% url 'college:register' %}"
+                        class="btn btn-primary btn-lg rounded-pill px-4">
+
+                        Get Started
+                        <i class="fa fa-arrow-right ms-2"></i>
+
+                    </a>
+
+                    <a
+                        href="{% url 'college:login' %}"
+                        class="btn btn-outline-primary btn-lg rounded-pill px-4">
+
+                        Sign In
+
+                    </a>
+
+                </div>
+
+                <!-- SEARCH -->
+                <div class="home_sb">
+
+                    <form
+                        action="{% url 'college:search' %}"
+                        method="post"
+                        class="banner_subs shadow-sm">
+
+                        {% csrf_token %}
+
+                        <div class="input-group">
+
+                            <input
+                                type="search"
+                                name="q"
+                                class="form-control home_si"
+                                placeholder="Search for a course..."
+                                required>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary px-4">
+
+                                Search
+                                <i class="fa fa-search ms-1"></i>
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- HERO IMAGE -->
+        <div class="col-lg-6 col-md-12 mt-5 mt-lg-0">
+
+            <div class="hero-text-img text-center">
+
+                <img
+                    src="{% static 'img/home-img2.png' %}"
+                    class="img-fluid hero-main-img"
+                    alt="Smart Study">
+
+                <!-- FLOATING CARD -->
+                <div class="floating-card floating-card-one shadow">
+
+                    <div class="icon-circle bg-primary bg-opacity-10">
+                        <i class="fa fa-book text-primary"></i>
+                    </div>
+
+                    <div>
+                        <strong>Courses</strong>
+                        <small class="d-block text-muted">
+                            Learn & grow
+                        </small>
+                    </div>
+
+                </div>
+
+
+                <div class="floating-card floating-card-two shadow">
+
+                    <div class="icon-circle bg-success bg-opacity-10">
+                        <i class="fa fa-graduation-cap text-success"></i>
+                    </div>
+
+                    <div>
+                        <strong>Smart Learning</strong>
+                        <small class="d-block text-muted">
+                            Learn anywhere
+                        </small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+```
+
+</section>
+
+<!-- FEATURES -->
+
+<section class="py-5 bg-white">
+
+```
+<div class="container">
+
+    <div class="text-center mb-5">
+
+        <span class="text-primary fw-semibold">
+            EVERYTHING IN ONE PLACE
+        </span>
+
+        <h2 class="fw-bold mt-2">
+            Make Learning Simpler
+        </h2>
+
+        <p class="text-muted">
+            Smart Study brings your academic activities together.
+        </p>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- COURSES -->
+        <div class="col-lg-3 col-md-6">
+
+            <div class="feature-card h-100 p-4 text-center">
+
+                <div class="feature-icon bg-primary bg-opacity-10">
+                    <i class="fa fa-book text-primary"></i>
+                </div>
+
+                <h5 class="fw-bold mt-4">
+                    Courses & Subjects
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Explore courses and subjects and keep your academic
+                    journey organized.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ASSIGNMENTS -->
+        <div class="col-lg-3 col-md-6">
+
+            <div class="feature-card h-100 p-4 text-center">
+
+                <div class="feature-icon bg-success bg-opacity-10">
+                    <i class="fa fa-file-text text-success"></i>
+                </div>
+
+                <h5 class="fw-bold mt-4">
+                    Assignments
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Create, submit, manage, and track assignments with ease.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ATTENDANCE -->
+        <div class="col-lg-3 col-md-6">
+
+            <div class="feature-card h-100 p-4 text-center">
+
+                <div class="feature-icon bg-warning bg-opacity-10">
+                    <i class="fa fa-calendar-check-o text-warning"></i>
+                </div>
+
+                <h5 class="fw-bold mt-4">
+                    Attendance
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Record and monitor attendance for every subject.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- GRADES -->
+        <div class="col-lg-3 col-md-6">
+
+            <div class="feature-card h-100 p-4 text-center">
+
+                <div class="feature-icon bg-danger bg-opacity-10">
+                    <i class="fa fa-bar-chart text-danger"></i>
+                </div>
+
+                <h5 class="fw-bold mt-4">
+                    Grades & Results
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Keep track of marks, results, and academic progress.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+<!-- WHY SMART STUDY -->
+
+<section
+    class="py-5"
+    style="background: linear-gradient(135deg, #f8fbff, #eef5ff);">
+
+```
+<div class="container">
+
+    <div class="row align-items-center">
+
+        <div class="col-lg-6 mb-4 mb-lg-0">
+
+            <span class="badge bg-primary rounded-pill px-3 py-2 mb-3">
+                SMART STUDY
+            </span>
+
+            <h2 class="fw-bold mb-3">
+                One platform for your entire academic journey.
+            </h2>
+
+            <p class="text-muted mb-4">
+                From discovering subjects to submitting assignments and
+                checking attendance and results, Smart Study keeps
+                everything connected in one place.
+            </p>
+
+            <div class="d-flex align-items-center mb-3">
+
+                <div class="check-icon">
+                    <i class="fa fa-check"></i>
+                </div>
+
+                <span class="ms-3">
+                    Easy course and subject management
+                </span>
+
+            </div>
+
+            <div class="d-flex align-items-center mb-3">
+
+                <div class="check-icon">
+                    <i class="fa fa-check"></i>
+                </div>
+
+                <span class="ms-3">
+                    Simple assignment and attendance tracking
+                </span>
+
+            </div>
+
+            <div class="d-flex align-items-center">
+
+                <div class="check-icon">
+                    <i class="fa fa-check"></i>
+                </div>
+
+                <span class="ms-3">
+                    Clear academic progress and results
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-6 text-center">
+
+            <div class="info-panel shadow-sm">
+
+                <i class="fa fa-graduation-cap fa-4x text-primary mb-3"></i>
+
+                <h3 class="fw-bold">
+                    Learn. Track. Achieve.
+                </h3>
+
+                <p class="text-muted mb-0">
+                    Everything you need for smarter academic management.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+<!-- CTA -->
+
+<section class="py-5 bg-primary text-white">
+	
+<div class="container text-center">
+
+    <h2 class="fw-bold mb-3">
+        Ready to make learning smarter?
+    </h2>
+
+    <p class="mb-4 opacity-75">
+        Join Smart Study and bring your academic life together.
+    </p>
+
+    <a
+        href="{% url 'college:register' %}"
+        class="btn btn-light btn-lg rounded-pill px-5">
+
+        Create Your Account
+
+    </a>
+
+</div>
+
+</section>
+
+<!-- CUSTOM STYLES -->
+
+<style>
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.78);
+    }
+
+
+    .hero-text h1 span {
+        color: #0d6efd;
+    }
+
+
+    .hero-main-img {
+        max-height: 520px;
+        position: relative;
+        z-index: 2;
+    }
+
+
+    .banner_subs {
+        background: #ffffff;
+        padding: 6px;
+        border-radius: 50px;
+        max-width: 560px;
+    }
+
+
+    .home_si {
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 50px 0 0 50px !important;
+        padding-left: 20px;
+    }
+
+
+    .banner_subs .btn {
+        border-radius: 50px !important;
+    }
+
+
+    .floating-card {
+        position: absolute;
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 3;
+    }
+
+
+    .floating-card-one {
+        top: 18%;
+        left: 3%;
+    }
+
+
+    .floating-card-two {
+        bottom: 12%;
+        right: 2%;
+    }
+
+
+    .icon-circle,
+    .feature-icon,
+    .check-icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        margin: auto;
+        font-size: 28px;
+    }
+
+
+    .check-icon {
+        width: 34px;
+        height: 34px;
+        background: #0d6efd;
+        color: white;
+        font-size: 14px;
+    }
+
+
+    .feature-card {
+        border-radius: 20px;
+        border: 1px solid #eef1f5;
+        background: #ffffff;
+        transition: all 0.3s ease;
+    }
+
+
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    }
+
+
+    .info-panel {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 60px 30px;
+    }
+
+
+    @media (max-width: 991px) {
+
+        .floating-card {
+            display: none;
+        }
+
+        .hero-main-img {
+            max-height: 400px;
+        }
+
+    }
+
+
+    @media (max-width: 576px) {
+
+        .hero-text h1 {
+            font-size: 2.3rem;
+        }
+
+        .banner_subs {
+            border-radius: 15px;
+        }
+
+        .home_si {
+            border-radius: 10px !important;
+        }
+
+    }
+
+</style>
 
 {% endblock %}
