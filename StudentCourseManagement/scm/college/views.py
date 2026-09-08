@@ -311,10 +311,36 @@ def enrollment_delete(request, i):
 
 @login_required
 @student_required
-def my_courses(request):
-    student = Student.objects.get(user=request.user)
-    enrollments = Enrollment.objects.filter(student=student).select_related('course')
-    return render(request,'student/my_courses.html',{'enrollments': enrollments})
+def my_subjects(request):
+    student = get_object_or_404(
+        Student,
+        user=request.user
+    )
+
+    enrollments = (
+        Enrollment.objects
+        .filter(
+            student=student,
+            subject__isnull=False
+        )
+        .select_related(
+            'course',
+            'subject',
+            'subject__course'
+        )
+        .order_by(
+            'course__course_name',
+            'subject__subject_name'
+        )
+    )
+
+    return render(
+        request,
+        'student/my_subjects.html',
+        {
+            'enrollments': enrollments
+        }
+    )
 
 @login_required
 @teacher_required

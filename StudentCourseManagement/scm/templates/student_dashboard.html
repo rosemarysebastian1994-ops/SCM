@@ -1,73 +1,412 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block navbar %}
-		<!-- START NAVBAR -->
-		<div id="navigation" class="navbar-light bg-faded site-navigation">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-20 align-self-center">
-						<div class="site-logo">
-							<a href="index.html"><img src="{% static 'img/logo.png' %}" alt=""></a>
-						</div>
-					</div><!--- END Col -->
 
-					<div class="col-60 d-flex">
-						<nav id="main-menu">
-							<ul>
-								<li><a href="{% url 'college:student_dashboard' %}">Home</a></li>
-								<li><a href="{% url 'college:my_courses' %}">My Courses</a></li>
-                                <li><a href="{% url 'college:student_assignments' %}">Assignments</a></li>
-                                <li><a href="{% url 'college:my_results' %}">Grades</a></li>
-								<li><a href="{% url 'college:my_attendance' %}">My Attendance</a></li>
-							</ul>
-						</nav>
-					</div><!--- END Col -->
+<!-- START NAVBAR -->
+<div id="navigation" class="navbar-light bg-white site-navigation shadow-sm">
 
-					<div class="col-20 d-none d-xl-block text-end align-self-center">
-						{% if user.is_authenticated %}
-						<a href="{% url 'college:logout' %}" class="header-btn">Log Out</a>
-						{% else %}
-						<a href="{% url 'college:login' %}" class="header-btn">Sign In</a>
-						<a href="{% url 'college:register' %}" class="btn_one">Sign Up</a>
-						{% endif %}
-					</div><!--- END Col -->
+    <div class="container-fluid">
+        <div class="row align-items-center">
 
-				</div><!--- END ROW -->
-			</div><!--- END CONTAINER -->
-		</div>
-		<!-- END NAVBAR -->
+            <!-- LOGO -->
+            <div class="col-xl-2 col-lg-2 col-md-3 col-6">
+                <div class="site-logo">
+                    <a href="{% url 'college:student_dashboard' %}">
+                        <img src="{% static 'img/logo.png' %}" alt="Smart Study">
+                    </a>
+                </div>
+            </div>
+
+            <!-- NAVIGATION -->
+            <div class="col-xl-7 col-lg-7 d-none d-lg-flex justify-content-center">
+                <nav id="main-menu">
+                    <ul class="mb-0">
+
+                        <li>
+                            <a href="{% url 'college:student_dashboard' %}">
+                                Home
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:my_subjects' %}">
+                                My Subjects
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:student_assignments' %}">
+                                Assignments
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:my_results' %}">
+                                Grades
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:my_attendance' %}">
+                                Attendance
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- USER BUTTON -->
+            <div class="col-xl-3 col-lg-3 col-md-9 col-6 text-end">
+
+                {% if user.is_authenticated %}
+
+                    <span class="d-none d-md-inline-block me-3 text-muted">
+                        Hi, <strong>{{ user.username }}</strong>
+                    </span>
+
+                    <a href="{% url 'college:logout' %}"
+                       class="btn btn-outline-danger rounded-pill px-4">
+                        Log Out
+                    </a>
+
+                {% else %}
+
+                    <a href="{% url 'college:login' %}"
+                       class="btn btn-outline-primary rounded-pill px-3">
+                        Sign In
+                    </a>
+
+                    <a href="{% url 'college:register' %}"
+                       class="btn btn-primary rounded-pill px-3 ms-2">
+                        Sign Up
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<!-- END NAVBAR -->
+
 {% endblock %}
-{% block content %}
-<h1 class="text-center">Student Dashboard</h1>
 
-<h3 class="text-center">Welcome {{ user.username }}</h3>
-<section class="home_bg hb_height" style="background-image: url({% static '/img/bg/home-bg.jpg' %});  background-size:cover; background-position: center center;">
-			<div class="container">
-				<div class="row">
-				  <div class="col-lg-6 col-sm-12 col-xs-12">
-					<div class="hero-text ht_top">
-						<h1><span>Smart Study</span> Where Knowledge Meets the Web</h1>
-						<p>Empowering students and teachers with a simple, connected platform to manage courses, explore subjects, track progress, and make learning more engaging.</p>
-					</div>
-					<div class="home_sb">
-						<form action="#" class="banner_subs">
-							<input type="text" class="form-control home_si" placeholder="Search your course here" required="required">
-							<button type="button" class="subscribe__btn">Search <i class="fa fa-paper-plane-o"></i></button>
-						</form>
-					</div>
-				  </div><!--- END COL -->
-				  <div class="col-lg-6 col-sm-12 col-xs-12">
-					<div class="hero-text-img">
-						<img src="{% static 'img/home-img2.png' %}" class="img-fluid" alt="" />
-						<div class="home_ps">
-							<span class="ti-user"></span>
-							<h2>4500+</h2>
-							<p>Active student</p>
-						</div>
-					</div>
-				  </div><!--- END COL -->
-				</div><!--- END ROW -->
-			</div><!--- END CONTAINER -->
-		</section>
+
+{% block content %}
+
+<!-- WELCOME SECTION -->
+<section class="py-5"
+         style="background: linear-gradient(135deg, #eef5ff, #f8fbff);">
+
+    <div class="container">
+
+        <div class="row align-items-center">
+
+            <!-- LEFT -->
+            <div class="col-lg-7 mb-4 mb-lg-0">
+
+                <div class="mb-3">
+                    <span class="badge bg-primary rounded-pill px-3 py-2">
+                        Student Dashboard
+                    </span>
+                </div>
+
+                <h1 class="display-5 fw-bold mb-3">
+                    Welcome back,
+                    <span class="text-primary">{{ user.username }}</span>!
+                </h1>
+
+                <p class="lead text-muted mb-4">
+                    Manage your courses, assignments, grades, and attendance
+                    from one simple and convenient place.
+                </p>
+
+                <div class="d-flex flex-wrap gap-2">
+
+                    <a href="{% url 'college:my_subjects' %}"
+                       class="btn btn-primary btn-lg rounded-pill px-4">
+                        Explore My Subjects
+                    </a>
+
+                    <a href="{% url 'college:student_assignments' %}"
+                       class="btn btn-outline-primary btn-lg rounded-pill px-4">
+                        View Assignments
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT IMAGE -->
+            <div class="col-lg-5 text-center">
+
+                <div class="position-relative">
+
+                    <img src="{% static 'img/home-img2.png' %}"
+                         class="img-fluid"
+                         alt="Student learning">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- QUICK ACCESS -->
+<section class="py-5 bg-white">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <span class="text-primary fw-semibold">
+                QUICK ACCESS
+            </span>
+
+            <h2 class="fw-bold mt-2">
+                Your Academic Hub
+            </h2>
+
+            <p class="text-muted">
+                Access everything you need for your studies.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <!-- COURSES -->
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{% url 'college:my_subjects' %}"
+                   class="text-decoration-none">
+
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center
+                                dashboard-card">
+
+                        <div class="mx-auto mb-3 d-flex align-items-center
+                                    justify-content-center rounded-circle bg-primary bg-opacity-10"
+                             style="width: 70px; height: 70px;">
+
+                            <i class="fa fa-book fa-2x text-primary"></i>
+
+                        </div>
+
+                        <h5 class="fw-bold text-dark">
+                            My Courses
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            View your enrolled courses and subjects.
+                        </p>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ASSIGNMENTS -->
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{% url 'college:student_assignments' %}"
+                   class="text-decoration-none">
+
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center
+                                dashboard-card">
+
+                        <div class="mx-auto mb-3 d-flex align-items-center
+                                    justify-content-center rounded-circle bg-success bg-opacity-10"
+                             style="width: 70px; height: 70px;">
+
+                            <i class="fa fa-file-text fa-2x text-success"></i>
+
+                        </div>
+
+                        <h5 class="fw-bold text-dark">
+                            Assignments
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            View, submit, and track your assignments.
+                        </p>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- GRADES -->
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{% url 'college:my_results' %}"
+                   class="text-decoration-none">
+
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center
+                                dashboard-card">
+
+                        <div class="mx-auto mb-3 d-flex align-items-center
+                                    justify-content-center rounded-circle bg-warning bg-opacity-10"
+                             style="width: 70px; height: 70px;">
+
+                            <i class="fa fa-graduation-cap fa-2x text-warning"></i>
+
+                        </div>
+
+                        <h5 class="fw-bold text-dark">
+                            Grades
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Check your marks and academic performance.
+                        </p>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ATTENDANCE -->
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{% url 'college:my_attendance' %}"
+                   class="text-decoration-none">
+
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center
+                                dashboard-card">
+
+                        <div class="mx-auto mb-3 d-flex align-items-center
+                                    justify-content-center rounded-circle bg-danger bg-opacity-10"
+                             style="width: 70px; height: 70px;">
+
+                            <i class="fa fa-calendar-check-o fa-2x text-danger"></i>
+
+                        </div>
+
+                        <h5 class="fw-bold text-dark">
+                            Attendance
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Track your attendance by subject.
+                        </p>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- STUDY BANNER -->
+<section class="py-5"
+         style="background: linear-gradient(135deg, #f8f9fa, #eef5ff);">
+
+    <div class="container">
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+
+            <div class="card-body p-4 p-lg-5">
+
+                <div class="row align-items-center">
+
+                    <div class="col-lg-8">
+
+                        <span class="badge bg-primary rounded-pill px-3 py-2 mb-3">
+                            SMART STUDY
+                        </span>
+
+                        <h2 class="fw-bold">
+                            Stay organized. Learn better.
+                        </h2>
+
+                        <p class="text-muted mb-0">
+                            Smart Study brings your courses, subjects,
+                            assignments, grades, and attendance together
+                            in one connected academic platform.
+                        </p>
+
+                    </div>
+
+                    <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+
+                        <a href="{% url 'college:student_assignments' %}"
+                           class="btn btn-primary btn-lg rounded-pill px-4">
+                            Start Learning
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CUSTOM STYLES -->
+<style>
+
+    #navigation {
+        padding: 15px 0;
+    }
+
+    #main-menu ul {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    #main-menu ul li a {
+        padding: 10px 15px;
+        font-weight: 500;
+        transition: 0.3s ease;
+    }
+
+    #main-menu ul li a:hover {
+        color: #0d6efd;
+    }
+
+    .dashboard-card {
+        transition: all 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10) !important;
+    }
+
+    .site-logo img {
+        max-height: 55px;
+        width: auto;
+    }
+
+</style>
 
 {% endblock %}

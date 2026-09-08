@@ -1,0 +1,56 @@
+{% extends 'student_dashboard.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2>My Courses</h2>
+
+    <table class="table table-bordered table-striped">
+
+        <thead>
+
+            <tr>
+                <th>Subject Name</th>
+                <th>Subject Code</th>
+                <th>Semester</th>
+                <th>Credits</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for enrollment in enrollments %}
+
+            <tr>
+
+                <td>{{ enrollment.subject.subject_name }}</td>
+
+                <td>{{ enrollment.subject.subject_code }}</td>
+
+                <td>{{ enrollment.subject.semester }}</td>
+
+                <td>{{ enrollment.subject.credits }}</td>
+
+            </tr>
+
+        {% empty %}
+
+            <tr>
+
+                <td colspan="4" class="text-center">
+                    You are not enrolled in any courses.
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
