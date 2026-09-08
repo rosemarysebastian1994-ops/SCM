@@ -1,42 +1,186 @@
 {% extends 'teacher_dashboard.html' %}
 {% load crispy_forms_tags %}
+
 {% block content %}
 
-<div class="container mt-4">
+<div class="container py-5">
 
-<h3>Create Assignment</h3>
+<div class="row justify-content-center">
 
-<div class="alert alert-info">
+    <div class="col-lg-8 col-md-10">
 
-    <strong>Subject:</strong>
-    {{ subject.subject_name }}
+        <!-- Page Header -->
+        <div class="text-center mb-4">
 
-    <br>
+            <h2 class="fw-bold">
+                Create Assignment
+            </h2>
 
-    <strong>Course:</strong>
-    {{ subject.course.course_name }}
+            <p class="text-muted">
+                Create a new assignment for your assigned subject.
+            </p>
 
-    <br>
+        </div>
 
-    <strong>Semester:</strong>
-    {{ subject.semester }}
+
+        <!-- Subject Information Card -->
+        <div class="card border-0 shadow-sm mb-4">
+
+            <div class="card-header bg-primary">
+                <h5 class="mb-0 text-white">
+                    <i class="bi bi-book me-2"></i>
+                    Subject Information
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <div class="p-3 bg-light rounded">
+
+                            <small class="text-muted d-block">
+                                Subject
+                            </small>
+
+                            <strong>
+                                {{ subject.subject_name }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="p-3 bg-light rounded">
+
+                            <small class="text-muted d-block">
+                                Subject Code
+                            </small>
+
+                            <strong>
+                                {{ subject.subject_code }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="p-3 bg-light rounded">
+
+                            <small class="text-muted d-block">
+                                Course
+                            </small>
+
+                            <strong>
+                                {{ subject.course.course_name }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <div class="p-3 bg-light rounded">
+
+                            <small class="text-muted d-block">
+                                Semester
+                            </small>
+
+                            <strong>
+                                {{ subject.semester }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <div class="p-3 bg-light rounded">
+
+                            <small class="text-muted d-block">
+                                Credits
+                            </small>
+
+                            <strong>
+                                {{ subject.credits }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Assignment Form -->
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-header bg-dark">
+
+                <h5 class="mb-0 text-white">
+                    <i class="bi bi-file-earmark-plus me-2"></i>
+                    Assignment Details
+                </h5>
+
+            </div>
+
+
+            <div class="card-body p-4">
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    {{ form|crispy }}
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+
+                        <a
+                            href="{% url 'college:course_assignments' subject.id %}"
+                            class="btn btn-outline-secondary">
+
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Back to Assignments
+
+                        </a>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary px-4">
+
+                            <i class="bi bi-check-circle me-1"></i>
+                            Create Assignment
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
-
-<form method="POST">
-
-    {% csrf_token %}
-
-    {{ form.as_p }}
-
-    <button type="submit"
-            class="btn btn-primary">
-
-        Create Assignment
-
-    </button>
-
-</form>
 
 </div>
 

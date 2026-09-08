@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import StudentRegistrationForm, DepartmentForm, TeacherForm, StudentForm, CourseForm, EnrollmentForm, \
-    AssignmentForm, SubmissionForm, GradeSubmissionForm, UserUpdateForm, TeacherProfileForm, StudentProfileForm
+    AssignmentForm, SubmissionForm, GradeSubmissionForm, UserUpdateForm, TeacherProfileForm, StudentProfileForm, SubjectForm
 from .models import Department, Teacher, Student, Course, Enrollment, Assignment, Submission, Attendance, HOD, Subject
 from django.contrib import messages
 from django.utils import timezone
+from .decorators import teacher_required, student_required, hod_required, admin_required
 
 def home(request):
     user = request.user
@@ -62,28 +63,30 @@ def logout_user(request):
 from django.contrib.auth.decorators import login_required
 
 @login_required
+@student_required
 def student_dashboard(request):
     return render(request, "student_dashboard.html")
 
 @login_required
+@teacher_required
 def teacher_dashboard(request):
     is_hod = request.user.groups.filter(name='HOD').exists()
     print(is_hod)
     return render(request, "teacher_dashboard.html", {'is_hod':is_hod})
 
 @login_required
+@admin_required
 def admin_dashboard(request):
     return render(request, 'admin_dashboard.html')
 
 @login_required
-def hod_dashboard(request):
-    is_hod = request.user.groups.filter(name='HOD').exists()
-    return render(request, "hod_dashboard.html", {'is_hod':is_hod})
-
+@admin_required
 def department_list(request):
     departments = Department.objects.all()
     return render(request, 'department_list.html', {'departments':departments})
 
+@login_required
+@admin_required
 def department_create(request):
     if request.method == "POST":
         form = DepartmentForm(request.POST)
@@ -95,6 +98,8 @@ def department_create(request):
     return render(request,"department_form.html",{"form": form}
     )
 
+@login_required
+@admin_required
 def department_update(request, i):
     department = Department.objects.get(id=i)
     if request.method == "POST":
@@ -107,6 +112,8 @@ def department_update(request, i):
     return render(request,"department_form.html",{"form": form}
     )
 
+@login_required
+@admin_required
 def department_delete(request, i):
     department = Department.objects.get(id=i)
     if request.method == "POST":
@@ -114,10 +121,14 @@ def department_delete(request, i):
         return redirect("college:department_list")
     return render(request,"department_delete.html",{"department": department})
 
+@login_required
+@admin_required
 def teacher_list(request):
     teachers = Teacher.objects.all()
     return render(request, 'teacher_list.html', {'teachers':teachers})
 
+@login_required
+@admin_required
 def teacher_create(request):
     if request.method == "POST":
         form = TeacherForm(request.POST)
@@ -128,6 +139,8 @@ def teacher_create(request):
         form = TeacherForm()
     return render(request,"teacher_form.html",{"form": form})
 
+@login_required
+@admin_required
 def teacher_update(request, i):
     teacher = Teacher.objects.get(id=i)
     if request.method == "POST":
@@ -139,6 +152,8 @@ def teacher_update(request, i):
         form = TeacherForm(instance=teacher)
     return render(request,"teacher_form.html",{"form": form})
 
+@login_required
+@admin_required
 def teacher_delete(request, i):
     teacher = Teacher.objects.get(id=i)
     if request.method == "POST":
@@ -146,10 +161,14 @@ def teacher_delete(request, i):
         return redirect("college:teacher_list")
     return render(request,"teacher_delete.html",{"teacher": teacher})
 
+@login_required
+@admin_required
 def student_list(request):
     students = Student.objects.all()
     return render(request, 'student_list.html', {'students':students})
 
+@login_required
+@admin_required
 def student_create(request):
     if request.method == "POST":
         form = StudentForm(request.POST)
@@ -160,6 +179,8 @@ def student_create(request):
         form = StudentForm()
     return render(request,"student_form.html",{"form": form})
 
+@login_required
+@admin_required
 def student_update(request, i):
     student = Student.objects.get(id=i)
     if request.method == "POST":
@@ -171,6 +192,8 @@ def student_update(request, i):
         form = StudentForm(instance=student)
     return render(request,"student_form.html",{"form": form})
 
+@login_required
+@admin_required
 def student_delete(request, i):
     student = Student.objects.get(id=i)
     if request.method == "POST":
@@ -178,10 +201,14 @@ def student_delete(request, i):
         return redirect("college:student_list")
     return render(request,"student_delete.html",{"student": student})
 
+@login_required
+@admin_required
 def course_list(request):
     courses = Course.objects.all()
     return render(request, 'course_list.html', {'courses':courses})
 
+@login_required
+@admin_required
 def course_create(request):
     if request.method == "POST":
         form = CourseForm(request.POST)
@@ -192,6 +219,8 @@ def course_create(request):
         form = CourseForm()
     return render(request,"course_form.html",{"form": form})
 
+@login_required
+@admin_required
 def course_update(request, i):
     course = Course.objects.get(id=i)
     if request.method == "POST":
@@ -203,6 +232,8 @@ def course_update(request, i):
         form = CourseForm(instance=course)
     return render(request,"course_form.html",{"form": form})
 
+@login_required
+@admin_required
 def course_delete(request, i):
     course = Course.objects.get(id=i)
     if request.method == "POST":
@@ -210,10 +241,54 @@ def course_delete(request, i):
         return redirect("college:course_list")
     return render(request,"course_delete.html",{"course": course})
 
+@login_required
+@admin_required
+def subject_list(request):
+    subjects = Subject.objects.all()
+    return render(request, 'subject_list.html', {'subjects':subjects})
+
+@login_required
+@admin_required
+def subject_create(request):
+    if request.method == "POST":
+        form = SubjectForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("college:subject_list")
+    else:
+        form = SubjectForm()
+    return render(request,"subject_form.html",{"form": form})
+
+@login_required
+@admin_required
+def subject_update(request, i):
+    subject = Subject.objects.get(id=i)
+    if request.method == "POST":
+        form = SubjectForm(request.POST,instance=subject)
+        if form.is_valid():
+            form.save()
+            return redirect("college:subject_list")
+    else:
+        form = SubjectForm(instance=subject)
+    return render(request,"subject_form.html",{"form": form})
+
+@login_required
+@admin_required
+def subject_delete(request, i):
+    subject = Subject.objects.get(id=i)
+    if request.method == "POST":
+        subject.delete()
+        return redirect("college:subject_list")
+    return render(request,"subject_delete.html",{"subject": subject})
+
+@login_required
+@admin_required
 def enrollment_list(request):
     enrollments = Enrollment.objects.select_related('student','course')
     return render(request,'enrollment_list.html',{'enrollments': enrollments})
 
+@login_required
+@admin_required
 def enrollment_create(request):
     if request.method == "POST":
         form = EnrollmentForm(request.POST)
@@ -225,6 +300,8 @@ def enrollment_create(request):
         form = EnrollmentForm()
     return render(request,'enrollment_form.html',{'form': form})
 
+@login_required
+@admin_required
 def enrollment_delete(request, i):
     enrollment = Enrollment.objects.get(id=i)
     if request.method == "POST":
@@ -233,12 +310,14 @@ def enrollment_delete(request, i):
     return render(request,"enrollment_delete.html",{"enrollment": enrollment})
 
 @login_required
+@student_required
 def my_courses(request):
     student = Student.objects.get(user=request.user)
     enrollments = Enrollment.objects.filter(student=student).select_related('course')
     return render(request,'student/my_courses.html',{'enrollments': enrollments})
 
 @login_required
+@teacher_required
 def teacher_students(request):
     teacher = get_object_or_404(
         Teacher,
@@ -269,6 +348,7 @@ def teacher_students(request):
     )
 
 @login_required
+@teacher_required
 def create_assignment(request, subject_id):
 
     teacher = get_object_or_404(
@@ -302,16 +382,19 @@ def create_assignment(request, subject_id):
 
         form = AssignmentForm()
 
+    today = timezone.localdate()
     return render(
         request,
         'teacher/create_assignment.html',
         {
             'form': form,
-            'subject': subject
+            'subject': subject,
+            'today': today
         }
     )
 
 @login_required
+@teacher_required
 def teacher_courses(request):
 
     teacher = Teacher.objects.get(
@@ -341,6 +424,7 @@ def teacher_courses(request):
     )
 
 @login_required
+@student_required
 def student_assignments(request):
 
     student = get_object_or_404(
@@ -365,6 +449,7 @@ def student_assignments(request):
     )
 
 @login_required
+@student_required
 def submit_assignment(request, assignment_id):
     student = get_object_or_404(Student,user=request.user)
     assignment = get_object_or_404(Assignment,id=assignment_id)
@@ -391,6 +476,7 @@ def submit_assignment(request, assignment_id):
     return render(request,"student/submit_assignment.html",{"form": form,"assignment": assignment})
 
 @login_required
+@teacher_required
 def view_submissions(request, assignment_id):
     teacher = get_object_or_404(
         Teacher,
@@ -420,6 +506,7 @@ def view_submissions(request, assignment_id):
 
 
 @login_required
+@teacher_required
 def course_assignments(request, subject_id):
 
     teacher = get_object_or_404(
@@ -448,6 +535,7 @@ def course_assignments(request, subject_id):
 
 
 @login_required
+@teacher_required
 def edit_assignment(request, assignment_id):
     teacher = get_object_or_404(
         Teacher,
@@ -492,6 +580,7 @@ def edit_assignment(request, assignment_id):
 
 
 @login_required
+@teacher_required
 def delete_assignment(request, assignment_id):
 
     teacher = get_object_or_404(
@@ -526,6 +615,7 @@ def delete_assignment(request, assignment_id):
 
 
 @login_required
+@teacher_required
 def grade_submission(request, submission_id):
 
     teacher = get_object_or_404(
@@ -578,6 +668,7 @@ def grade_submission(request, submission_id):
 
 
 @login_required
+@student_required
 def my_results(request):
     student = Student.objects.get(user=request.user)
 
@@ -906,6 +997,7 @@ def chatbot(request):
         }, status=500)
 
 @login_required
+@teacher_required
 def select_course_attendance(request):
 
     teacher = get_object_or_404(
@@ -927,6 +1019,7 @@ def select_course_attendance(request):
 
 from django.urls import reverse
 @login_required
+@teacher_required
 def mark_attendance(request, subject_id):
 
     teacher = get_object_or_404(
@@ -1009,6 +1102,7 @@ def mark_attendance(request, subject_id):
     )
 
 @login_required
+@teacher_required
 def attendance_history(request):
 
     teacher = get_object_or_404(
@@ -1035,6 +1129,7 @@ def attendance_history(request):
     )
 
 @login_required
+@teacher_required
 def attendance_dates(request, subject_id):
 
     teacher = get_object_or_404(
@@ -1069,6 +1164,7 @@ from datetime import datetime
 
 
 @login_required
+@teacher_required
 def attendance_detail(request, subject_id, date):
 
     teacher = get_object_or_404(
@@ -1108,6 +1204,7 @@ def attendance_detail(request, subject_id, date):
 from django.db.models import Count
 
 @login_required
+@student_required
 def my_attendance(request):
     student = get_object_or_404(
         Student,
@@ -1182,14 +1279,17 @@ def contact(request):
     return render(request, 'contact.html')
 
 @login_required
+@teacher_required
 def teacher_profile(request):
     return render(request, 'teacher_profile.html')
 
 @login_required
+@student_required
 def student_profile(request):
     return render(request, 'student_profile.html')
 
 @login_required
+@teacher_required
 def edit_teacher_profile(request):
     teacher = get_object_or_404(
         Teacher,
@@ -1234,6 +1334,7 @@ def edit_teacher_profile(request):
     )
 
 @login_required
+@student_required
 def edit_student_profile(request):
 
     student = Student.objects.get(user=request.user)
@@ -1273,6 +1374,7 @@ def edit_student_profile(request):
     )
 
 @login_required
+@hod_required
 def hod_dashboard(request):
 
     hod = get_object_or_404(
@@ -1307,6 +1409,7 @@ def hod_dashboard(request):
     )
 
 @login_required
+@hod_required
 def assign_subject(request, subject_id):
 
     # Get logged-in HOD

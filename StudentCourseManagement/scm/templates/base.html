@@ -156,7 +156,15 @@
             <div class="col-md-2 mb-4">
                 <h5 class="text-light">Portal</h5>
                 <ul class="list-unstyled">
-					{% if user|has_group:"Teacher" %}
+					{% if user|has_group:"HOD" %}
+						<li>
+							<a href="{% url 'college:hod_dashboard' %}"
+							   class="text-white-50 text-decoration-none">
+								Dashboard
+							</a>
+						</li>
+
+					{% elif user|has_group:"Teacher" %}
 						<li>
 							<a href="{% url 'college:teacher_dashboard' %}"
 							   class="text-white-50 text-decoration-none">

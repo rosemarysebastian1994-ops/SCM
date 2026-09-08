@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Department, Teacher, Student, Course, Enrollment, Assignment, Submission
+from .models import Department, Teacher, Student, Course, Subject, Enrollment, Assignment, Submission
+from django.utils import timezone
 
 class StudentRegistrationForm(UserCreationForm):
     ROLE_CHOICES = (
@@ -57,6 +58,33 @@ class CourseForm(forms.ModelForm):
         model = Course
         fields = '__all__'
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        course_name = cleaned_data.get('course_name')
+        department = cleaned_data.get('department')
+
+        if course_name and department:
+
+            course_exists = Course.objects.filter(
+                course_name__iexact=course_name.strip(),
+                department=department
+            ).exclude(
+                pk=self.instance.pk
+            ).exists()
+
+            if course_exists:
+                raise forms.ValidationError(
+                    'A course with this name already exists in this department.'
+                )
+
+        return cleaned_data
+
+class SubjectForm(forms.ModelForm):
+    class Meta:
+        model = Subject
+        fields = '__all__'
+
 class EnrollmentForm(forms.ModelForm):
     class Meta:
         model = Enrollment
@@ -74,13 +102,22 @@ class AssignmentForm(forms.ModelForm):
 
         widgets = {
             'due_date': forms.DateTimeInput(
-                attrs={'type': 'datetime-local'},
+                attrs={'type': 'datetime-local',
+                       'class': 'form-control'},
                 format='%Y-%m-%dT%H:%M')
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['due_date'].input_formats = ['%Y-%m-%dT%H:%M']
+        self.fields['due_date'].widget.attrs['min'] = (timezone.localtime().strftime('%Y-%m-%dT%H:%M'))
+
+    def clean_due_date(self):
+        due_date = self.cleaned_data['due_date']
+
+        if due_date < timezone.now():
+            raise forms.ValidationError("Due date cannot be in the past.")
+        return due_date
 
 class SubmissionForm(forms.ModelForm):
 

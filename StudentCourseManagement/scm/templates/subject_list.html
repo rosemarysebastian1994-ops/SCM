@@ -1,0 +1,57 @@
+{% extends 'admin_dashboard.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+<h2>Subjects</h2>
+
+<a href="{% url 'college:subject_create' %}" class="btn btn-success mb-3">
+    Add Subject
+</a>
+
+<table class="table table-bordered table-striped">
+
+<tr>
+
+<th>Name</th>
+<th>Code</th>
+<th>Description</th>
+<th>Semester</th>
+<th>Credits</th>
+
+<th>Actions</th>
+
+</tr>
+
+{% for subject in subjects %}
+
+<tr>
+
+<td>{{ subject.subject_name }}</td>
+
+<td>{{ subject.subject_code }}</td>
+
+<td>{{ subject.description }}</td>
+
+<td>{{ subject.semester }}</td>
+
+<td>{{ subject.credits }}</td>
+<td>
+
+<a href="{% url 'college:subject_update' subject.id %}" class="btn btn-primary btn-sm">
+Edit
+</a>
+
+<a href="{% url 'college:subject_delete' subject.id %}" class="btn btn-danger btn-sm">
+Delete
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+</div>
+{% endblock %}

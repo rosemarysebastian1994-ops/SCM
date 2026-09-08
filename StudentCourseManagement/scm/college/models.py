@@ -68,6 +68,14 @@ class Course(models.Model):
 
     credits = models.IntegerField()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['course_name', 'department'],
+                name='unique_course_per_department'
+            )
+        ]
+
     def __str__(self):
         return f"{self.course_name} - {self.department.name}"
 
@@ -91,6 +99,7 @@ class Subject(models.Model):
     )
     class Meta:
         ordering = ['semester']
+        constraints = [models.UniqueConstraint(fields=['course', 'subject_name'], name='unique_subject_per_course')]
 
     def __str__(self):
         return self.subject_name
@@ -134,7 +143,7 @@ class Assignment(models.Model):
 
     description = models.TextField()
 
-    due_date = models.DateField()
+    due_date = models.DateTimeField()
 
     def __str__(self):
         return self.title
