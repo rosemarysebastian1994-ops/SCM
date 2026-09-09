@@ -116,12 +116,24 @@ def department_update(request, i):
 
 @login_required
 @admin_required
-def department_delete(request, i):
-    department = Department.objects.get(id=i)
+def department_delete(request, department_id):
+
+    department = get_object_or_404(
+        Department,
+        id=department_id
+    )
+
     if request.method == "POST":
         department.delete()
+
+        messages.success(
+            request,
+            f'Department "{department.name}" deleted successfully.'
+        )
+
         return redirect("college:department_list")
-    return render(request,"department_delete.html",{"department": department})
+
+    return redirect("college:department_list")
 
 @login_required
 @admin_required
@@ -172,12 +184,24 @@ def teacher_update(request, i):
 
 @login_required
 @admin_required
-def teacher_delete(request, i):
-    teacher = Teacher.objects.get(id=i)
+def teacher_delete(request, teacher_id):
+
+    teacher = get_object_or_404(
+        Teacher,
+        id=teacher_id
+    )
+
     if request.method == "POST":
         teacher.delete()
+
+        messages.success(
+            request,
+            f'Teacher "{teacher.user.username}" deleted successfully.'
+        )
+
         return redirect("college:teacher_list")
-    return render(request,"teacher_delete.html",{"teacher": teacher})
+
+    return redirect("college:teacher_list")
 
 @login_required
 @admin_required
@@ -212,12 +236,25 @@ def student_update(request, i):
 
 @login_required
 @admin_required
-def student_delete(request, i):
-    student = Student.objects.get(id=i)
+@login_required
+def student_delete(request, student_id):
+
+    student = get_object_or_404(
+        Student,
+        id=student_id
+    )
+
     if request.method == "POST":
         student.delete()
+
+        messages.success(
+            request,
+            f'Student "{student.user.username}" deleted successfully.'
+        )
+
         return redirect("college:student_list")
-    return render(request,"student_delete.html",{"student": student})
+
+    return redirect("college:student_list")
 
 @login_required
 @admin_required
@@ -252,12 +289,24 @@ def course_update(request, i):
 
 @login_required
 @admin_required
-def course_delete(request, i):
-    course = Course.objects.get(id=i)
+def course_delete(request, course_id):
+
+    course = get_object_or_404(
+        Course,
+        id=course_id
+    )
+
     if request.method == "POST":
         course.delete()
+
+        messages.success(
+            request,
+            f'Course "{course.course_name}" deleted successfully.'
+        )
+
         return redirect("college:course_list")
-    return render(request,"course_delete.html",{"course": course})
+
+    return redirect("college:course_list")
 
 @login_required
 @admin_required
@@ -292,12 +341,24 @@ def subject_update(request, i):
 
 @login_required
 @admin_required
-def subject_delete(request, i):
-    subject = Subject.objects.get(id=i)
+def subject_delete(request, subject_id):
+
+    subject = get_object_or_404(
+        Subject,
+        id=subject_id
+    )
+
     if request.method == "POST":
         subject.delete()
+
+        messages.success(
+            request,
+            f'Subject "{subject.subject_name}" deleted successfully.'
+        )
+
         return redirect("college:subject_list")
-    return render(request,"subject_delete.html",{"subject": subject})
+
+    return redirect("college:subject_list")
 
 @login_required
 @admin_required
@@ -320,12 +381,24 @@ def enrollment_create(request):
 
 @login_required
 @admin_required
-def enrollment_delete(request, i):
-    enrollment = Enrollment.objects.get(id=i)
+def enrollment_delete(request, enrollment_id):
+
+    enrollment = get_object_or_404(
+        Enrollment,
+        id=enrollment_id
+    )
+
     if request.method == "POST":
         enrollment.delete()
+
+        messages.success(
+            request,
+            f'Enrollment "{enrollment.student} - {enrollment.course}" deleted successfully.'
+        )
+
         return redirect("college:enrollment_list")
-    return render(request,"enrollment_delete.html",{"enrollment": enrollment})
+
+    return redirect("college:enrollment_list")
 
 @login_required
 @student_required

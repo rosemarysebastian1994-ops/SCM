@@ -26,7 +26,7 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = 'django-insecure-y@+3#k0(km6p-mol7%=1vb&04@p(i(949gj+k$2)2_$pk5=i^k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
