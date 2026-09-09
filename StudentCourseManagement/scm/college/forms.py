@@ -48,10 +48,54 @@ class TeacherForm(forms.ModelForm):
         model = Teacher
         fields = '__all__'
 
+    def clean(self):
+        print("===== TEACHER FORM CLEAN CALLED =====")
+        cleaned_data = super().clean()
+
+        user = cleaned_data.get("user")
+
+        print("SELECTED USER:", user)
+
+        if user:
+            print(
+                "IS STUDENT:",
+                Student.objects.filter(user=user).exists()
+            )
+
+            if Student.objects.filter(user=user).exists():
+                self.add_error(
+                    "user",
+                    "This user is already registered as a Student."
+                )
+
+        return cleaned_data
+
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
         fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        user = cleaned_data.get("user")
+
+        print("SELECTED USER:", user)
+
+        if user:
+            print(
+                "IS STUDENT:",
+                Student.objects.filter(user=user).exists()
+            )
+
+            if Student.objects.filter(user=user).exists():
+                self.add_error(
+                    "user",
+                    "This user is already registered as a Teacher."
+                )
+
+        return cleaned_data
+
 
 class CourseForm(forms.ModelForm):
     class Meta:

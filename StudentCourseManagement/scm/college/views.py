@@ -16,6 +16,8 @@ def home(request):
         return redirect('college:teacher_dashboard')
     elif user.groups.filter(name='Student').exists():
         return redirect('college:student_dashboard')
+    elif user.is_authenticated:
+        return render(request, 'home2.html')
     else:
         pass
     return render(request, 'home.html')
@@ -130,14 +132,30 @@ def teacher_list(request):
 @login_required
 @admin_required
 def teacher_create(request):
+
+    print("===== TEACHER CREATE VIEW CALLED =====")
+
     if request.method == "POST":
+
+        print("===== TEACHER POST =====")
+
         form = TeacherForm(request.POST)
+
+        print("FORM CLASS:", form.__class__)
+
         if form.is_valid():
+            print("===== FORM IS VALID =====")
             form.save()
             return redirect("college:teacher_list")
+
     else:
         form = TeacherForm()
-    return render(request,"teacher_form.html",{"form": form})
+
+    return render(
+        request,
+        "teacher_form.html",
+        {"form": form}
+    )
 
 @login_required
 @admin_required

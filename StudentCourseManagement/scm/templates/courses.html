@@ -3,7 +3,7 @@
 <h1>Courses</h1>
 <ol>
     {% for course in courses %}
-    <li>{{course.course_name}}</li>
+    <li>{{course.course_name}} - {{course.department.name}}</li>
     {% endfor %}
 </ol>
 {% endblock %}
