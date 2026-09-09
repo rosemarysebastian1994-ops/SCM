@@ -101,8 +101,54 @@ def admin_dashboard(request):
 @login_required
 @admin_required
 def department_list(request):
+
     departments = Department.objects.all()
-    return render(request, 'department_list.html', {'departments':departments})
+
+    for department in departments:
+
+        department.course_count = Course.objects.filter(
+            department=department
+        ).count()
+
+        department.subject_count = Subject.objects.filter(
+            course__department=department
+        ).count()
+
+        department.teacher_count = Teacher.objects.filter(
+            department=department
+        ).count()
+
+        department.student_count = Student.objects.filter(
+            department=department
+        ).count()
+
+        department.hod_count = HOD.objects.filter(
+            department=department
+        ).count()
+
+        department.enrollment_count = Enrollment.objects.filter(
+            course__department=department
+        ).count()
+
+        department.assignment_count = Assignment.objects.filter(
+            subject__course__department=department
+        ).count()
+
+        department.submission_count = Submission.objects.filter(
+            assignment__subject__course__department=department
+        ).count()
+
+        department.attendance_count = Attendance.objects.filter(
+            subject__course__department=department
+        ).count()
+
+    return render(
+        request,
+        "department_list.html",
+        {
+            "departments": departments
+        }
+    )
 
 @login_required
 @admin_required
@@ -135,20 +181,22 @@ def department_update(request, i):
 @admin_required
 def department_delete(request, department_id):
 
+    if request.method != "POST":
+        return redirect("college:department_list")
+
     department = get_object_or_404(
         Department,
         id=department_id
     )
 
-    if request.method == "POST":
-        department.delete()
+    department_name = department.name
 
-        messages.success(
-            request,
-            f'Department "{department.name}" deleted successfully.'
-        )
+    department.delete()
 
-        return redirect("college:department_list")
+    messages.success(
+        request,
+        f'Department "{department_name}" deleted successfully.'
+    )
 
     return redirect("college:department_list")
 
