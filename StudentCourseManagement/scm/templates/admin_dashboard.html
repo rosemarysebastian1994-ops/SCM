@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block navbar %}
+
 <style>
     #main-menu ul {
         white-space: nowrap;
@@ -9,77 +11,764 @@
     #main-menu li {
         display: inline-block;
     }
+
+    /* =========================
+       ADMIN DASHBOARD
+    ========================= */
+
+    .admin-dashboard {
+        background: #f7f9fc;
+        padding-bottom: 70px;
+    }
+
+    /* Welcome Section */
+    .admin-welcome {
+        padding: 45px 0 25px;
+    }
+
+    .admin-welcome h1 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #1f2937;
+    }
+
+    .admin-welcome p {
+        color: #6b7280;
+        font-size: 16px;
+        margin-bottom: 0;
+    }
+
+    .admin-welcome strong {
+        color: #2563eb;
+    }
+
+    /* Statistics Cards */
+    .stat-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: 1px solid #eef1f6;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.10);
+    }
+
+    .stat-icon {
+        width: 55px;
+        height: 55px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 23px;
+        margin-bottom: 18px;
+    }
+
+    .stat-card h2 {
+        font-size: 30px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .stat-card p {
+        color: #6b7280;
+        margin: 0;
+        font-size: 15px;
+    }
+
+    .stat-card a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    /* Icon backgrounds */
+    .icon-department {
+        background: #e8f1ff;
+        color: #2563eb;
+    }
+
+    .icon-teacher {
+        background: #e9f9ef;
+        color: #16a34a;
+    }
+
+    .icon-student {
+        background: #fff4df;
+        color: #ea8a00;
+    }
+
+    .icon-course {
+        background: #f1eaff;
+        color: #7c3aed;
+    }
+
+    /* Hero */
+    .admin-hero {
+        margin-top: 15px;
+        border-radius: 22px;
+        overflow: hidden;
+        min-height: 330px;
+        display: flex;
+        align-items: center;
+        background-size: cover;
+        background-position: center;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.10);
+    }
+
+    .admin-hero-content {
+        padding: 55px;
+    }
+
+    .admin-hero-content h2 {
+        font-size: 34px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 15px;
+    }
+
+    .admin-hero-content p {
+        color: rgba(255, 255, 255, 0.90);
+        font-size: 16px;
+        line-height: 1.7;
+        max-width: 600px;
+    }
+
+    .admin-hero-btn {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 12px 25px;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #2563eb;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.3s ease;
+    }
+
+    .admin-hero-btn:hover {
+        background: #f1f5f9;
+        color: #1d4ed8;
+        transform: translateY(-2px);
+    }
+
+    /* Quick Actions */
+    .section-title {
+        margin: 50px 0 25px;
+    }
+
+    .section-title h3 {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 5px;
+    }
+
+    .section-title p {
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .action-card {
+        background: #ffffff;
+        border-radius: 15px;
+        padding: 25px;
+        height: 100%;
+        border: 1px solid #eef1f6;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+        text-decoration: none;
+    }
+
+    .action-icon {
+        font-size: 28px;
+        margin-bottom: 15px;
+        color: #2563eb;
+    }
+
+    .action-card h5 {
+        color: #1f2937;
+        font-weight: 600;
+        margin-bottom: 7px;
+    }
+
+    .action-card p {
+        color: #6b7280;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    /* Management Panel */
+    .management-panel {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 30px;
+        margin-top: 40px;
+        border: 1px solid #eef1f6;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .management-panel h4 {
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 20px;
+    }
+
+    .management-link {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1px solid #edf0f5;
+        text-decoration: none;
+        color: #374151;
+        transition: 0.2s ease;
+    }
+
+    .management-link:last-child {
+        border-bottom: none;
+    }
+
+    .management-link:hover {
+        color: #2563eb;
+        padding-left: 5px;
+    }
+
+    .management-link span:last-child {
+        color: #9ca3af;
+    }
+
+    @media (max-width: 768px) {
+
+        .admin-welcome h1 {
+            font-size: 28px;
+        }
+
+        .admin-hero-content {
+            padding: 35px 25px;
+        }
+
+        .admin-hero-content h2 {
+            font-size: 27px;
+        }
+
+        #main-menu ul {
+            white-space: normal;
+        }
+
+        #main-menu li {
+            display: block;
+        }
+    }
 </style>
-		<!-- START NAVBAR -->
-		<div id="navigation" class="navbar-light bg-faded site-navigation">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-20 align-self-center">
-						<div class="site-logo">
-							<a href="index.html"><img src="{% static 'img/logo.png' %}" alt=""></a>
-						</div>
-					</div><!--- END Col -->
 
-					<div class="col-60 d-flex">
-						<nav id="main-menu">
-							<ul>
-								<li><a href="{% url 'college:admin_dashboard' %}">Home</a></li>
-								<li><a href="{% url 'college:department_list' %}">Departments</a></li>
-                                <li><a href="{% url 'college:teacher_list' %}">Teachers</a></li>
-                                <li><a href="{% url 'college:student_list' %}">Students</a></li>
-								<li><a href="{% url 'college:course_list' %}">Courses</a></li>
-								<li><a href="{% url 'college:subject_list' %}">Subjects</a></li>
-								<li><a href="{% url 'college:enrollment_list' %}">Enrollments</a></li>
-							</ul>
-						</nav>
-					</div><!--- END Col -->
+<!-- START NAVBAR -->
+<div id="navigation" class="navbar-light bg-faded site-navigation">
 
-					<div class="col-20 d-none d-xl-block text-end align-self-center">
-						{% if user.is_authenticated %}
-						<a href="{% url 'college:logout' %}" class="header-btn">Log Out</a>
-						{% else %}
-						<a href="{% url 'college:login' %}" class="header-btn">Sign In</a>
-						<a href="{% url 'college:register' %}" class="btn_one">Sign Up</a>
-						{% endif %}
-					</div><!--- END Col -->
+    <div class="container-fluid">
+        <div class="row">
 
-				</div><!--- END ROW -->
-			</div><!--- END CONTAINER -->
-		</div>
-		<!-- END NAVBAR -->
+            <!-- Logo -->
+            <div class="col-20 align-self-center">
+                <div class="site-logo">
+                    <a href="{% url 'college:admin_dashboard' %}">
+                        <img src="{% static 'img/logo.png' %}" alt="SCM Logo">
+                    </a>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="col-60 d-flex">
+                <nav id="main-menu">
+                    <ul>
+                        <li>
+                            <a href="{% url 'college:admin_dashboard' %}">
+                                Home
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:department_list' %}">
+                                Departments
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:teacher_list' %}">
+                                Teachers
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:student_list' %}">
+                                Students
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:course_list' %}">
+                                Courses
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:subject_list' %}">
+                                Subjects
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:enrollment_list' %}">
+                                Enrollments
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Authentication -->
+            <div class="col-20 d-none d-xl-block text-end align-self-center">
+
+                {% if user.is_authenticated %}
+
+                    <a href="{% url 'college:logout' %}"
+                       class="header-btn">
+                        Log Out
+                    </a>
+
+                {% else %}
+
+                    <a href="{% url 'college:login' %}"
+                       class="header-btn">
+                        Sign In
+                    </a>
+
+                    <a href="{% url 'college:register' %}"
+                       class="btn_one">
+                        Sign Up
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<!-- END NAVBAR -->
+
 {% endblock %}
+
+
 {% block content %}
-<h1 class="text-center">Admin Dashboard</h1>
 
-<h3 class="text-center">Welcome {{ request.user.username }}</h3>
-<section class="home_bg hb_height" style="background-image: url({% static '/img/bg/home-bg.jpg' %});  background-size:cover; background-position: center center;">
-			<div class="container">
-				<div class="row">
-				  <div class="col-lg-6 col-sm-12 col-xs-12">
-					<div class="hero-text ht_top">
-						<h1><span>Smart Study</span> Where Knowledge Meets the Web</h1>
-						<p>Empowering students and teachers with a simple, connected platform to manage courses, explore subjects, track progress, and make learning more engaging.</p>
-					</div>
-					<div class="home_sb">
-						<form action="#" class="banner_subs">
-							<input type="text" class="form-control home_si" placeholder="Search your course here" required="required">
-							<button type="button" class="subscribe__btn">Search <i class="fa fa-paper-plane-o"></i></button>
-						</form>
-					</div>
-				  </div><!--- END COL -->
-				  <div class="col-lg-6 col-sm-12 col-xs-12">
-					<div class="hero-text-img">
-						<img src="{% static 'img/home-img2.png' %}" class="img-fluid" alt="" />
-						<div class="home_ps">
-							<span class="ti-user"></span>
-							<h2>4500+</h2>
-							<p>Active student</p>
-						</div>
-					</div>
-				  </div><!--- END COL -->
-				</div><!--- END ROW -->
-			</div><!--- END CONTAINER -->
-		</section>
+<div class="admin-dashboard">
 
+    <div class="container">
+
+        <!-- =========================
+             WELCOME
+        ========================== -->
+
+        <div class="admin-welcome">
+
+            <h1>
+                Admin Dashboard
+            </h1>
+
+            <p>
+                Welcome back,
+                <strong>{{ request.user.username }}</strong>.
+                Here's what's happening in your college portal.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             STATISTICS
+        ========================== -->
+
+        <div class="row">
+
+            <!-- Departments -->
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{% url 'college:department_list' %}"
+                   style="text-decoration:none;">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon icon-department">
+                            <i class="fa fa-building"></i>
+                        </div>
+
+                        <h2>
+                            {{ department_count|default:"0" }}
+                        </h2>
+
+                        <p>
+                            Departments
+                        </p>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- Teachers -->
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{% url 'college:teacher_list' %}"
+                   style="text-decoration:none;">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon icon-teacher">
+                            <i class="fa fa-users"></i>
+                        </div>
+
+                        <h2>
+                            {{ teacher_count|default:"0" }}
+                        </h2>
+
+                        <p>
+                            Teachers
+                        </p>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- Students -->
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{% url 'college:student_list' %}"
+                   style="text-decoration:none;">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon icon-student">
+                            <i class="fa fa-graduation-cap"></i>
+                        </div>
+
+                        <h2>
+                            {{ student_count|default:"0" }}
+                        </h2>
+
+                        <p>
+                            Students
+                        </p>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- Courses -->
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{% url 'college:course_list' %}"
+                   style="text-decoration:none;">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon icon-course">
+                            <i class="fa fa-book"></i>
+                        </div>
+
+                        <h2>
+                            {{ course_count|default:"0" }}
+                        </h2>
+
+                        <p>
+                            Courses
+                        </p>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             HERO
+        ========================== -->
+
+        <section class="admin-hero"
+                 style="background-image:
+                 linear-gradient(
+                    rgba(17, 24, 39, 0.72),
+                    rgba(37, 99, 235, 0.70)
+                 ),
+                 url('{% static 'img/bg/home-bg.jpg' %}');">
+
+            <div class="admin-hero-content">
+
+                <h2>
+                    Manage Your College,
+                    <br>
+                    All in One Place
+                </h2>
+
+                <p>
+                    Manage departments, teachers, students, courses,
+                    subjects and enrollments from one convenient
+                    administration portal.
+                </p>
+
+                <a href="{% url 'college:department_list' %}"
+                   class="admin-hero-btn">
+                    Manage Departments
+                    <i class="fa fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             QUICK ACTIONS
+        ========================== -->
+
+        <div class="section-title">
+
+            <h3>
+                Quick Actions
+            </h3>
+
+            <p>
+                Frequently used administration tools
+            </p>
+
+        </div>
+
+
+        <div class="row">
+
+            <!-- Departments -->
+            <div class="col-lg-3 col-md-6 mb-4">
+
+                <a href="{% url 'college:department_list' %}"
+                   class="action-card">
+
+                    <div class="action-icon">
+                        <i class="fa fa-building"></i>
+                    </div>
+
+                    <h5>
+                        Manage Departments
+                    </h5>
+
+                    <p>
+                        Add, edit and manage college departments.
+                    </p>
+
+                </a>
+
+            </div>
+
+
+            <!-- Teachers -->
+            <div class="col-lg-3 col-md-6 mb-4">
+
+                <a href="{% url 'college:teacher_list' %}"
+                   class="action-card">
+
+                    <div class="action-icon">
+                        <i class="fa fa-user"></i>
+                    </div>
+
+                    <h5>
+                        Manage Teachers
+                    </h5>
+
+                    <p>
+                        Manage teacher profiles and assignments.
+                    </p>
+
+                </a>
+
+            </div>
+
+
+            <!-- Students -->
+            <div class="col-lg-3 col-md-6 mb-4">
+
+                <a href="{% url 'college:student_list' %}"
+                   class="action-card">
+
+                    <div class="action-icon">
+                        <i class="fa fa-graduation-cap"></i>
+                    </div>
+
+                    <h5>
+                        Manage Students
+                    </h5>
+
+                    <p>
+                        View and manage registered students.
+                    </p>
+
+                </a>
+
+            </div>
+
+
+            <!-- Courses -->
+            <div class="col-lg-3 col-md-6 mb-4">
+
+                <a href="{% url 'college:course_list' %}"
+                   class="action-card">
+
+                    <div class="action-icon">
+                        <i class="fa fa-book"></i>
+                    </div>
+
+                    <h5>
+                        Manage Courses
+                    </h5>
+
+                    <p>
+                        Create and manage courses and subjects.
+                    </p>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             MANAGEMENT PANEL
+        ========================== -->
+
+        <div class="management-panel">
+
+            <h4>
+                Administration
+            </h4>
+
+
+            <a href="{% url 'college:department_list' %}"
+               class="management-link">
+
+                <span>
+                    <i class="fa fa-building me-2"></i>
+                    Departments
+                </span>
+
+                <span>
+                    <i class="fa fa-angle-right"></i>
+                </span>
+
+            </a>
+
+
+            <a href="{% url 'college:teacher_list' %}"
+               class="management-link">
+
+                <span>
+                    <i class="fa fa-users me-2"></i>
+                    Teachers
+                </span>
+
+                <span>
+                    <i class="fa fa-angle-right"></i>
+                </span>
+
+            </a>
+
+
+            <a href="{% url 'college:student_list' %}"
+               class="management-link">
+
+                <span>
+                    <i class="fa fa-graduation-cap me-2"></i>
+                    Students
+                </span>
+
+                <span>
+                    <i class="fa fa-angle-right"></i>
+                </span>
+
+            </a>
+
+
+            <a href="{% url 'college:course_list' %}"
+               class="management-link">
+
+                <span>
+                    <i class="fa fa-book me-2"></i>
+                    Courses
+                </span>
+
+                <span>
+                    <i class="fa fa-angle-right"></i>
+                </span>
+
+            </a>
+
+
+            <a href="{% url 'college:subject_list' %}"
+               class="management-link">
+
+                <span>
+                    <i class="fa fa-file-text me-2"></i>
+                    Subjects
+                </span>
+
+                <span>
+                    <i class="fa fa-angle-right"></i>
+                </span>
+
+            </a>
+
+
+            <a href="{% url 'college:enrollment_list' %}"
+               class="management-link">
+
+                <span>
+                    <i class="fa fa-user-plus me-2"></i>
+                    Enrollments
+                </span>
+
+                <span>
+                    <i class="fa fa-angle-right"></i>
+                </span>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
 
 {% endblock %}

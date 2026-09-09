@@ -79,7 +79,24 @@ def teacher_dashboard(request):
 @login_required
 @admin_required
 def admin_dashboard(request):
-    return render(request, 'admin_dashboard.html')
+
+    department_count = Department.objects.count()
+    teacher_count = Teacher.objects.count()
+    student_count = Student.objects.count()
+    course_count = Course.objects.count()
+
+    context = {
+        'department_count': department_count,
+        'teacher_count': teacher_count,
+        'student_count': student_count,
+        'course_count': course_count,
+    }
+
+    return render(
+        request,
+        'admin_dashboard.html',
+        context
+    )
 
 @login_required
 @admin_required
