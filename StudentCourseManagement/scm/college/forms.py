@@ -39,41 +39,69 @@ class StudentRegistrationForm(UserCreationForm):
         return email
 
 class DepartmentForm(forms.ModelForm):
+
     class Meta:
         model = Department
-        fields = '__all__'
+        fields = ['name', 'description']
+
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter department name'
+            }),
+
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter department description',
+                'rows': 4
+            }),
+        }
+
+from django import forms
+from .models import Teacher, Student
+
 
 class TeacherForm(forms.ModelForm):
     class Meta:
         model = Teacher
         fields = '__all__'
 
-    def clean(self):
-        print("===== TEACHER FORM CLEAN CALLED =====")
-        cleaned_data = super().clean()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-        user = cleaned_data.get("user")
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'form-control'
+            })
 
-        print("SELECTED USER:", user)
+        self.fields['user'].widget.attrs.update({
+            'class': 'form-select'
+        })
 
-        if user:
-            print(
-                "IS STUDENT:",
-                Student.objects.filter(user=user).exists()
+        self.fields['department'].widget.attrs.update({
+            'class': 'form-select'
+        })
+
+    def clean_user(self):
+        user = self.cleaned_data.get('user')
+
+        if user and Student.objects.filter(user=user).exists():
+            raise forms.ValidationError(
+                "This user is already registered as a Student."
             )
 
-            if Student.objects.filter(user=user).exists():
-                self.add_error(
-                    "user",
-                    "This user is already registered as a Student."
-                )
-
-        return cleaned_data
+        return user
 
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = '__all__'
+        fields = ['user', 'admission_no', 'year', 'phone', 'department']
+
+    widgets = {'user': forms.Select(attrs={'class': 'form-select'}),
+               'admission_no': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter admission number'}),
+               'year': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter academic year'}),
+               'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter phone number'}),
+               'department': forms.Select(attrs={'class': 'form-select'}), }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -102,6 +130,44 @@ class CourseForm(forms.ModelForm):
         model = Course
         fields = '__all__'
 
+    widgets = {
+        'department': forms.Select(
+            attrs={
+                'class': 'form-select',
+            }
+        ),
+
+        'course_name': forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter course name',
+            }
+        ),
+
+        'course_code': forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter course code',
+            }
+        ),
+
+        'description': forms.Textarea(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter course description',
+                'rows': 4,
+            }
+        ),
+
+        'credits': forms.NumberInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter credits',
+                'min': 1,
+            }
+        ),
+    }
+
     def clean(self):
         cleaned_data = super().clean()
 
@@ -129,10 +195,80 @@ class SubjectForm(forms.ModelForm):
         model = Subject
         fields = '__all__'
 
+    widgets = {
+        'course': forms.Select(
+            attrs={
+                'class': 'form-select',
+            }
+        ),
+
+        'subject_name': forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter subject name',
+            }
+        ),
+
+        'subject_code': forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter subject code',
+            }
+        ),
+
+        'description': forms.Textarea(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter subject description',
+                'rows': 4,
+            }
+        ),
+
+        'semester': forms.Select(
+            attrs={
+                'class': 'form-select',
+            }
+        ),
+
+        'credits': forms.NumberInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter credits',
+                'min': 1,
+            }
+        ),
+
+        'teacher': forms.Select(
+            attrs={
+                'class': 'form-select',
+            }
+        ),
+    }
+
 class EnrollmentForm(forms.ModelForm):
     class Meta:
         model = Enrollment
-        fields = ['student', 'course']
+        fields = '__all__'
+
+    widgets = {
+        'student': forms.Select(
+            attrs={
+                'class': 'form-select',
+            }
+        ),
+
+        'course': forms.Select(
+            attrs={
+                'class': 'form-select',
+            }
+        ),
+
+        'subject': forms.Select(
+            attrs={
+                'class': 'form-select',
+            }
+        ),
+    }
 
 class AssignmentForm(forms.ModelForm):
 

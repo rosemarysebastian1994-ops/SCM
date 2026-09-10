@@ -142,40 +142,83 @@ def department_list(request):
             subject__course__department=department
         ).count()
 
+    form = DepartmentForm()
     return render(
         request,
         "department_list.html",
         {
-            "departments": departments
+            "departments": departments,
+            "form": form,
         }
     )
 
 @login_required
 @admin_required
 def department_create(request):
+
     if request.method == "POST":
         form = DepartmentForm(request.POST)
+
         if form.is_valid():
             form.save()
+            messages.success(
+                request,
+                "Department added successfully."
+            )
             return redirect("college:department_list")
+
     else:
         form = DepartmentForm()
-    return render(request,"department_form.html",{"form": form}
+
+    return render(
+        request,
+        "department_list.html",
+        {"form": form}
     )
 
 @login_required
 @admin_required
-def department_update(request, i):
-    department = Department.objects.get(id=i)
-    if request.method == "POST":
-        form = DepartmentForm(request.POST,instance=department)
-        if form.is_valid():
-            form.save()
-            return redirect("college:department_list")
-    else:
-        form = DepartmentForm(instance=department)
-    return render(request,"department_form.html",{"form": form}
+def department_update(request, department_id):
+
+    department = get_object_or_404(
+        Department,
+        id=department_id
     )
+
+    if request.method == "POST":
+
+        form = DepartmentForm(
+            request.POST,
+            instance=department
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Department updated successfully."
+            )
+
+            return redirect(
+                "college:department_list"
+            )
+
+        departments = Department.objects.all()
+
+        return render(
+            request,
+            "department_list.html",
+            {
+                "departments": departments,
+                "form": form,
+                "edit_department_id": department.id,
+            }
+        )
+
+    return redirect("college:department_list")
+
 
 @login_required
 @admin_required
@@ -204,48 +247,97 @@ def department_delete(request, department_id):
 @admin_required
 def teacher_list(request):
     teachers = Teacher.objects.all()
-    return render(request, 'teacher_list.html', {'teachers':teachers})
+    form = TeacherForm()
+
+    return render(
+        request,
+        'teacher_list.html',
+        {
+            'teachers': teachers,
+            'form': form
+        }
+    )
 
 @login_required
 @admin_required
 def teacher_create(request):
 
-    print("===== TEACHER CREATE VIEW CALLED =====")
-
     if request.method == "POST":
-
-        print("===== TEACHER POST =====")
 
         form = TeacherForm(request.POST)
 
-        print("FORM CLASS:", form.__class__)
-
         if form.is_valid():
-            print("===== FORM IS VALID =====")
+
             form.save()
-            return redirect("college:teacher_list")
 
-    else:
-        form = TeacherForm()
+            messages.success(
+                request,
+                "Teacher added successfully."
+            )
 
-    return render(
-        request,
-        "teacher_form.html",
-        {"form": form}
+            return redirect(
+                "college:teacher_list"
+            )
+
+        # Invalid form:
+        # Stay on teacher list and show errors inside modal
+        teachers = Teacher.objects.all()
+        return render(
+            request,
+            "teacher_list.html",
+            {
+                "teachers": teachers,
+                "form": form
+            }
+        )
+
+    return redirect(
+        "college:teacher_list"
     )
 
 @login_required
 @admin_required
-def teacher_update(request, i):
-    teacher = Teacher.objects.get(id=i)
+def teacher_update(request, teacher_id):
+
+    teacher = get_object_or_404(
+        Teacher,
+        id=teacher_id
+    )
+
     if request.method == "POST":
-        form = TeacherForm(request.POST,instance=teacher)
+
+        form = TeacherForm(
+            request.POST,
+            instance=teacher
+        )
+
         if form.is_valid():
+
             form.save()
-            return redirect("college:teacher_list")
-    else:
-        form = TeacherForm(instance=teacher)
-    return render(request,"teacher_form.html",{"form": form})
+
+            messages.success(
+                request,
+                "Teacher updated successfully."
+            )
+
+            return redirect(
+                "college:teacher_list"
+            )
+
+        teachers = Teacher.objects.all()
+
+        return render(
+            request,
+            "teacher_list.html",
+            {
+                "teachers": teachers,
+                "form": form,
+                "edit_teacher_id": teacher.id,
+                "edit_modal_id": f"editTeacherModal{teacher.id}",
+            }
+        )
+
+    return redirect("college:teacher_list")
 
 @login_required
 @admin_required
@@ -271,37 +363,89 @@ def teacher_delete(request, teacher_id):
 @login_required
 @admin_required
 def student_list(request):
+
     students = Student.objects.all()
-    return render(request, 'student_list.html', {'students':students})
+    form = StudentForm()
+
+    return render(
+        request,
+        "student_list.html",
+        {
+            "students": students,
+            "form": form
+        }
+    )
 
 @login_required
 @admin_required
 def student_create(request):
+
     if request.method == "POST":
         form = StudentForm(request.POST)
+
         if form.is_valid():
             form.save()
+            messages.success(
+                request,
+                "Student added successfully."
+            )
             return redirect("college:student_list")
+
     else:
         form = StudentForm()
-    return render(request,"student_form.html",{"form": form})
+
+    return render(
+        request,
+        "student_list.html",
+        {"form": form}
+    )
 
 @login_required
 @admin_required
-def student_update(request, i):
-    student = Student.objects.get(id=i)
+def student_update(request, student_id):
+
+    student = get_object_or_404(
+        Student,
+        id=student_id
+    )
+
     if request.method == "POST":
-        form = StudentForm(request.POST,instance=student)
+
+        form = StudentForm(
+            request.POST,
+            instance=student
+        )
+
         if form.is_valid():
+
             form.save()
-            return redirect("college:student_list")
-    else:
-        form = StudentForm(instance=student)
-    return render(request,"student_form.html",{"form": form})
+
+            messages.success(
+                request,
+                "Student updated successfully."
+            )
+
+            return redirect(
+                "college:student_list"
+            )
+
+        students = Student.objects.all()
+
+        return render(
+            request,
+            "student_list.html",
+            {
+                "students": students,
+                "form": form,
+                "edit_student_id": student.id,
+                "edit_modal_id": f"editStudentModal{student.id}",
+            }
+        )
+
+    return redirect("college:student_list")
 
 @login_required
 @admin_required
-@login_required
 def student_delete(request, student_id):
 
     student = get_object_or_404(
@@ -324,33 +468,89 @@ def student_delete(request, student_id):
 @login_required
 @admin_required
 def course_list(request):
+
     courses = Course.objects.all()
-    return render(request, 'course_list.html', {'courses':courses})
+    departments = Department.objects.all()
+    form = CourseForm()
+
+    return render(
+        request,
+        "course_list.html",
+        {
+            "courses": courses,
+            "departments": departments,
+            "form": form,
+        }
+    )
 
 @login_required
 @admin_required
 def course_create(request):
+
     if request.method == "POST":
         form = CourseForm(request.POST)
+
         if form.is_valid():
             form.save()
+            messages.success(
+                request,
+                "Course added successfully."
+            )
             return redirect("college:course_list")
+
     else:
         form = CourseForm()
-    return render(request,"course_form.html",{"form": form})
+
+    return render(
+        request,
+        "course_list.html",
+        {"form": form}
+    )
 
 @login_required
 @admin_required
-def course_update(request, i):
-    course = Course.objects.get(id=i)
+def course_update(request, course_id):
+
+    course = get_object_or_404(
+        Course,
+        id=course_id
+    )
+
     if request.method == "POST":
-        form = CourseForm(request.POST,instance=course)
+
+        form = CourseForm(
+            request.POST,
+            instance=course
+        )
+
         if form.is_valid():
+
             form.save()
-            return redirect("college:course_list")
-    else:
-        form = CourseForm(instance=course)
-    return render(request,"course_form.html",{"form": form})
+
+            messages.success(
+                request,
+                "Course updated successfully."
+            )
+
+            return redirect(
+                "college:course_list"
+            )
+
+        courses = Course.objects.all()
+
+        return render(
+            request,
+            "course_list.html",
+            {
+                "courses": courses,
+                "departments": Department.objects.all(),
+                "form": form,
+                "edit_course_id": course.id,
+                "edit_modal_id": f"editCourseModal{course.id}",
+            }
+        )
+
+    return redirect("college:course_list")
 
 @login_required
 @admin_required
@@ -376,33 +576,97 @@ def course_delete(request, course_id):
 @login_required
 @admin_required
 def subject_list(request):
-    subjects = Subject.objects.all()
-    return render(request, 'subject_list.html', {'subjects':subjects})
+
+    subjects = Subject.objects.select_related(
+        'course',
+        'teacher',
+        'teacher__user'
+    )
+
+    courses = Course.objects.all()
+    teachers = Teacher.objects.select_related('user')
+    form = SubjectForm()
+
+    return render(
+        request,
+        'subject_list.html',
+        {
+            'subjects': subjects,
+            'courses': courses,
+            'teachers': teachers,
+            'form': form,
+        }
+    )
 
 @login_required
 @admin_required
 def subject_create(request):
+
     if request.method == "POST":
         form = SubjectForm(request.POST)
+
         if form.is_valid():
             form.save()
+            messages.success(
+                request,
+                "Subject added successfully."
+            )
             return redirect("college:subject_list")
+
     else:
         form = SubjectForm()
-    return render(request,"subject_form.html",{"form": form})
+
+    return render(
+        request,
+        "subject_list.html",
+        {"form": form}
+    )
 
 @login_required
 @admin_required
-def subject_update(request, i):
-    subject = Subject.objects.get(id=i)
+def subject_update(request, subject_id):
+
+    subject = get_object_or_404(
+        Subject,
+        id=subject_id
+    )
+
     if request.method == "POST":
-        form = SubjectForm(request.POST,instance=subject)
+
+        form = SubjectForm(
+            request.POST,
+            instance=subject
+        )
+
         if form.is_valid():
+
             form.save()
-            return redirect("college:subject_list")
-    else:
-        form = SubjectForm(instance=subject)
-    return render(request,"subject_form.html",{"form": form})
+
+            messages.success(
+                request,
+                "Subject updated successfully."
+            )
+
+            return redirect(
+                "college:subject_list"
+            )
+
+        subjects = Subject.objects.all()
+
+        return render(
+            request,
+            "subject_list.html",
+            {
+                "subjects": subjects,
+                "courses": Course.objects.all(),
+                "teachers": Teacher.objects.all(),
+                "form": form,
+                "edit_subject_id": subject.id,
+                "edit_modal_id": f"editSubjectModal{subject.id}",
+            }
+        )
+
+    return redirect("college:subject_list")
 
 @login_required
 @admin_required
@@ -429,20 +693,32 @@ def subject_delete(request, subject_id):
 @admin_required
 def enrollment_list(request):
     enrollments = Enrollment.objects.select_related('student','course')
-    return render(request,'enrollment_list.html',{'enrollments': enrollments})
+    form = EnrollmentForm()
+    return render(request,'enrollment_list.html',{'enrollments': enrollments, 'form': form})
 
 @login_required
 @admin_required
 def enrollment_create(request):
+
     if request.method == "POST":
         form = EnrollmentForm(request.POST)
+
         if form.is_valid():
             form.save()
-            messages.success(request,"Student enrolled successfully.")
-            return redirect('college:enrollment_list')
+            messages.success(
+                request,
+                "Enrollment added successfully."
+            )
+            return redirect("college:enrollment_list")
+
     else:
         form = EnrollmentForm()
-    return render(request,'enrollment_form.html',{'form': form})
+
+    return render(
+        request,
+        "admin/enrollment_list.html",
+        {"form": form}
+    )
 
 @login_required
 @admin_required
