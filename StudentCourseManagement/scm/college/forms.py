@@ -97,7 +97,7 @@ class StudentForm(forms.ModelForm):
         model = Student
         fields = ['user', 'admission_no', 'year', 'phone', 'department']
 
-    widgets = {'user': forms.Select(attrs={'class': 'form-select'}),
+        widgets = {'user': forms.Select(attrs={'class': 'form-select'}),
                'admission_no': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter admission number'}),
                'year': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter academic year'}),
                'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter phone number'}),
@@ -130,43 +130,43 @@ class CourseForm(forms.ModelForm):
         model = Course
         fields = '__all__'
 
-    widgets = {
-        'department': forms.Select(
-            attrs={
-                'class': 'form-select',
-            }
-        ),
+        widgets = {
+            'department': forms.Select(
+                attrs={
+                    'class': 'form-select',
+                }
+            ),
 
-        'course_name': forms.TextInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter course name',
-            }
-        ),
+            'course_name': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter course name',
+                }
+            ),
 
-        'course_code': forms.TextInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter course code',
-            }
-        ),
+            'course_code': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter course code',
+                }
+            ),
 
-        'description': forms.Textarea(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter course description',
-                'rows': 4,
-            }
-        ),
+            'description': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter course description',
+                    'rows': 4,
+                }
+            ),
 
-        'credits': forms.NumberInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter credits',
-                'min': 1,
-            }
-        ),
-    }
+            'credits': forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter credits',
+                    'min': 1,
+                }
+            ),
+        }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -195,80 +195,80 @@ class SubjectForm(forms.ModelForm):
         model = Subject
         fields = '__all__'
 
-    widgets = {
-        'course': forms.Select(
-            attrs={
-                'class': 'form-select',
-            }
-        ),
+        widgets = {
+            'course': forms.Select(
+                attrs={
+                    'class': 'form-select',
+                }
+            ),
 
-        'subject_name': forms.TextInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter subject name',
-            }
-        ),
+            'subject_name': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter subject name',
+                }
+            ),
 
-        'subject_code': forms.TextInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter subject code',
-            }
-        ),
+            'subject_code': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter subject code',
+                }
+            ),
 
-        'description': forms.Textarea(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter subject description',
-                'rows': 4,
-            }
-        ),
+            'description': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter subject description',
+                    'rows': 4,
+                }
+            ),
 
-        'semester': forms.Select(
-            attrs={
-                'class': 'form-select',
-            }
-        ),
+            'semester': forms.Select(
+                attrs={
+                    'class': 'form-select',
+                }
+            ),
 
-        'credits': forms.NumberInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter credits',
-                'min': 1,
-            }
-        ),
+            'credits': forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter credits',
+                    'min': 1,
+                }
+            ),
 
-        'teacher': forms.Select(
-            attrs={
-                'class': 'form-select',
-            }
-        ),
-    }
+            'teacher': forms.Select(
+                attrs={
+                    'class': 'form-select',
+                }
+            ),
+        }
 
 class EnrollmentForm(forms.ModelForm):
     class Meta:
         model = Enrollment
         fields = '__all__'
 
-    widgets = {
-        'student': forms.Select(
-            attrs={
-                'class': 'form-select',
-            }
-        ),
+        widgets = {
+            'student': forms.Select(
+                attrs={
+                    'class': 'form-select',
+                }
+            ),
 
-        'course': forms.Select(
-            attrs={
-                'class': 'form-select',
-            }
-        ),
+            'course': forms.Select(
+                attrs={
+                    'class': 'form-select',
+                }
+            ),
 
-        'subject': forms.Select(
-            attrs={
-                'class': 'form-select',
-            }
-        ),
-    }
+            'subject': forms.Select(
+                attrs={
+                    'class': 'form-select',
+                }
+            ),
+        }
 
 class AssignmentForm(forms.ModelForm):
 

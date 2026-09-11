@@ -1491,9 +1491,11 @@ def mark_attendance(request, subject_id):
         teacher=teacher
     )
 
-    enrollments = Enrollment.objects.filter(
-        course=subject.course
-    ).select_related("student")
+    enrollments = (
+        Enrollment.objects
+        .filter(subject=subject)
+        .select_related("student", "subject")
+    )
 
     today = timezone.localdate()
 
