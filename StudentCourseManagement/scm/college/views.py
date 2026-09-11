@@ -1,10 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import StudentRegistrationForm, DepartmentForm, TeacherForm, StudentForm, CourseForm, EnrollmentForm, \
+from .forms import StudentRegistrationForm, TeacherRegistrationForm, DepartmentForm, TeacherForm, StudentForm, CourseForm, EnrollmentForm, \
     AssignmentForm, SubmissionForm, GradeSubmissionForm, UserUpdateForm, TeacherProfileForm, StudentProfileForm, SubjectForm
 from .models import Department, Teacher, Student, Course, Enrollment, Assignment, Submission, Attendance, HOD, Subject
 from django.contrib import messages
 from django.utils import timezone
 from .decorators import teacher_required, student_required, hod_required, admin_required
+from django.contrib.auth.models import User, Group
+from django.contrib.auth import login
+from django.db import transaction
+from django.contrib.auth.decorators import login_required
+
 
 def home(request):
     user = request.user
@@ -21,6 +26,176 @@ def home(request):
     else:
         pass
     return render(request, 'home.html')
+
+@transaction.atomic
+def student_register(request):
+
+    if request.method == "POST":
+
+        form = StudentRegistrationForm(request.POST)
+
+        if form.is_valid():
+
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+                email=form.cleaned_data['email'],
+                password=form.cleaned_data['password1']
+            )
+
+            student = Student.objects.create(
+                user=user,
+                admission_no=form.cleaned_data['admission_no'],
+                year=form.cleaned_data['year'],
+                phone=form.cleaned_data['phone'],
+                department=form.cleaned_data['department'],
+                is_approved=False
+            )
+
+            # Automatically add the Student group
+            student_group, created = Group.objects.get_or_create(
+                name="Student"
+            )
+
+            user.groups.add(student_group)
+
+            messages.success(
+                request,
+                "Registration successful. Your account is awaiting approval."
+            )
+
+            return redirect("college:login")
+
+    else:
+        form = StudentRegistrationForm()
+
+    return render(
+        request,
+        "student_register.html",
+        {"form": form}
+    )
+
+@login_required
+def pending_students(request):
+
+    students = Student.objects.filter(
+        is_approved=False
+    ).select_related(
+        'user',
+        'department'
+    )
+
+    return render(
+        request,
+        'admin/pending_students.html',
+        {
+            'students': students
+        }
+    )
+
+@login_required
+def approve_student(request, student_id):
+
+    student = get_object_or_404(
+        Student,
+        id=student_id
+    )
+
+    student.is_approved = True
+    student.save()
+
+    messages.success(
+        request,
+        f"{student.user.get_full_name() or student.user.username} "
+        f"has been approved."
+    )
+
+    return redirect("college:pending_students")
+
+@transaction.atomic
+def teacher_register(request):
+
+    if request.method == "POST":
+
+        form = TeacherRegistrationForm(request.POST)
+
+        if form.is_valid():
+
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+                email=form.cleaned_data['email'],
+                password=form.cleaned_data['password1']
+            )
+
+            teacher = Teacher.objects.create(
+                user=user,
+                phone=form.cleaned_data['phone'],
+                qualification=form.cleaned_data['qualification'],
+                department=form.cleaned_data['department'],
+                is_approved=False
+            )
+
+            teacher_group, created = Group.objects.get_or_create(
+                name="Teacher"
+            )
+
+            user.groups.add(teacher_group)
+
+            messages.success(
+                request,
+                "Registration successful. Your account is awaiting admin approval."
+            )
+
+            return redirect("college:login")
+
+    else:
+        form = TeacherRegistrationForm()
+
+    return render(
+        request,
+        "teacher_register.html",
+        {"form": form}
+    )
+
+@login_required
+def pending_teachers(request):
+
+    teachers = Teacher.objects.filter(
+        is_approved=False
+    ).select_related(
+        'user',
+        'department'
+    )
+
+    return render(
+        request,
+        'admin/pending_teachers.html',
+        {
+            'teachers': teachers
+        }
+    )
+
+@login_required
+def approve_teacher(request, teacher_id):
+
+    teacher = get_object_or_404(
+        Teacher,
+        id=teacher_id
+    )
+
+    teacher.is_approved = True
+    teacher.save()
+
+    messages.success(
+        request,
+        f"{teacher.user.get_full_name() or teacher.user.username} "
+        f"has been approved."
+    )
+
+    return redirect("college:pending_teachers")
 
 def register(request):
     if request.method == "POST":
@@ -46,9 +221,29 @@ def login_user(request):
             elif user.groups.filter(name='HOD').exists():
                 return redirect('college:hod_dashboard')
             elif user.groups.filter(name='Teacher').exists():
-                return redirect('college:teacher_dashboard')
+                teacher = Teacher.objects.get(user=user)
+
+                if not teacher.is_approved:
+                    messages.warning(
+                        request,
+                        "Your teacher account is awaiting admin approval."
+                    )
+
+                    return redirect("college:login_user")
+
+                return redirect("college:teacher_dashboard")
             elif user.groups.filter(name='Student').exists():
-                return redirect('college:student_dashboard')
+                student = Student.objects.get(user=user)
+
+                if not student.is_approved:
+                    messages.warning(
+                        request,
+                        "Your account is awaiting approval from the Admin/HOD."
+                    )
+
+                    return redirect("college:login")
+
+                return redirect("college:student_dashboard")
             else:
                 return redirect('college:home')
         else:
@@ -61,8 +256,6 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return redirect('college:login')
-
-from django.contrib.auth.decorators import login_required
 
 @login_required
 @student_required
@@ -84,12 +277,21 @@ def admin_dashboard(request):
     teacher_count = Teacher.objects.count()
     student_count = Student.objects.count()
     course_count = Course.objects.count()
+    pending_student_count = Student.objects.filter(
+        is_approved=False
+    ).count()
+
+    pending_teacher_count = Teacher.objects.filter(
+        is_approved=False
+    ).count()
 
     context = {
         'department_count': department_count,
         'teacher_count': teacher_count,
         'student_count': student_count,
         'course_count': course_count,
+        'pending_student_count': pending_student_count,
+        'pending_teacher_count': pending_teacher_count
     }
 
     return render(

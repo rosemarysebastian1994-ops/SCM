@@ -5,38 +5,153 @@ from .models import Department, Teacher, Student, Course, Subject, Enrollment, A
 from django.utils import timezone
 
 class StudentRegistrationForm(UserCreationForm):
-    ROLE_CHOICES = (
-        ('student', 'Student'),
-        ('teacher', 'Teacher'),
+
+    username = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter username'
+        })
     )
-    role = forms.ChoiceField(
-        choices=ROLE_CHOICES,
-        widget=forms.Select()
+
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter password'
+        })
     )
 
-    email = forms.EmailField(required=True)
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter password'
+        })
+    )
 
-    class Meta:
-        model = User
-        fields = (
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-            'role',
-            'password1',
-            'password2',
-        )
+    first_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter first name'
+        })
+    )
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
+    last_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter last name'
+        })
+    )
 
-        if User.objects.filter(email__iexact=email).exists():
-            raise forms.ValidationError(
-                "This email is already registered."
-            )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter email'
+        })
+    )
 
-        return email
+    admission_no = forms.CharField(
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter admission number'
+        })
+    )
+
+    year = forms.IntegerField(
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter year'
+        })
+    )
+
+    phone = forms.CharField(
+        max_length=15,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter phone number'
+        })
+    )
+
+    department = forms.ModelChoiceField(
+        queryset=Department.objects.all(),
+        empty_label="Select Department",
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        })
+    )
+
+class TeacherRegistrationForm(UserCreationForm):
+
+    username = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter username'
+        })
+    )
+
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter password'
+        })
+    )
+
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter password'
+        })
+    )
+
+    first_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter first name'
+        })
+    )
+
+    last_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter last name'
+        })
+    )
+
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter email'
+        })
+    )
+
+    phone = forms.CharField(
+        max_length=15,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter phone number'
+        })
+    )
+
+    qualification = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter qualification'
+        })
+    )
+
+    department = forms.ModelChoiceField(
+        queryset=Department.objects.all(),
+        empty_label="Select Department",
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        })
+    )
 
 class DepartmentForm(forms.ModelForm):
 

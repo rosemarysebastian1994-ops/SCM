@@ -639,7 +639,6 @@
 
             </div>
 
-
             <!-- Courses -->
             <div class="col-lg-3 col-md-6 mb-4">
 
@@ -663,6 +662,159 @@
             </div>
 
         </div>
+
+        <!-- Pending Student Approvals -->
+    <div class="col-lg-6 col-md-6">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body p-4">
+
+                <div class="d-flex align-items-center justify-content-between">
+
+                    <div>
+                        <span class="text-muted small">
+                            STUDENT MANAGEMENT
+                        </span>
+
+                        <h4 class="fw-bold mb-1 mt-1">
+                            Pending Student Approvals
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            Review students waiting for approval.
+                        </p>
+                    </div>
+
+                    <div class="approval-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="d-flex align-items-center justify-content-between mt-4">
+
+                    <div>
+
+                        <span class="approval-count">
+                            {{ pending_student_count }}
+                        </span>
+
+                        <span class="text-muted ms-2">
+                            Pending
+                        </span>
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'college:pending_students' %}"
+                        class="btn btn-primary rounded-pill px-4">
+
+                        Review
+                        <i class="fa-solid fa-arrow-right ms-2"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Pending Teacher Approvals -->
+    <div class="col-lg-6 col-md-6">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body p-4">
+
+                <div class="d-flex align-items-center justify-content-between">
+
+                    <div>
+                        <span class="text-muted small">
+                            TEACHER MANAGEMENT
+                        </span>
+
+                        <h4 class="fw-bold mb-1 mt-1">
+                            Pending Teacher Approvals
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            Review teachers waiting for approval.
+                        </p>
+                    </div>
+
+                    <div class="approval-icon bg-success bg-opacity-10 text-success">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="d-flex align-items-center justify-content-between mt-4">
+
+                    <div>
+
+                        <span class="approval-count">
+                            {{ pending_teacher_count }}
+                        </span>
+
+                        <span class="text-muted ms-2">
+                            Pending
+                        </span>
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'college:pending_teachers' %}"
+                        class="btn btn-success rounded-pill px-4">
+
+                        Review
+                        <i class="fa-solid fa-arrow-right ms-2"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<style>
+    .approval-icon {
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        flex-shrink: 0;
+    }
+    .approval-count {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    .card {
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10) !important;
+    }
+</style>
 
 
         <!-- =========================
