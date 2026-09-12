@@ -2483,3 +2483,9 @@ def payment_delete(request, payment_id):
     return redirect(
         'college:payment_list'
     )
+
+def signup(request):
+    return render(
+        request,
+        "signup.html"
+    )

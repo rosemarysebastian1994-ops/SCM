@@ -75,7 +75,11 @@
 						<a href="{% url 'college:logout' %}" class="header-btn">Log Out</a>
 						{% else %}
 						<a href="{% url 'college:login' %}" class="header-btn">Sign In</a>
-						<a href="{% url 'college:register' %}" class="btn_one">Sign Up</a>
+						<a href="{% url 'college:signup' %}"
+						   class="btn_one">
+							<i class="fa-solid fa-user-plus me-2"></i>
+							Sign Up
+						</a>
 						{% endif %}
 					</div><!--- END Col -->
 				</div><!--- END ROW -->

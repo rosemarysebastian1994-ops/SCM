@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container py-5">
+
+<!-- Heading -->
+<div class="text-center mb-5">
+    <h1 class="fw-bold">Create Your Account</h1>
+
+    <p class="text-muted">
+        Choose how you would like to register
+    </p>
+</div>
+
+
+<!-- Registration Cards -->
+<div class="row justify-content-center g-4">
+
+    <!-- Student Registration -->
+    <div class="col-md-5 col-lg-4">
+
+        <div class="card registration-card h-100 border-0 shadow-sm">
+
+            <div class="card-body text-center p-5">
+
+                <div class="registration-icon student-icon mb-4">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+
+                <h3 class="fw-bold mb-3">
+                    Student Registration
+                </h3>
+
+                <p class="text-muted mb-4">
+                    Create your student account and access
+                    courses, assignments, attendance and results.
+                </p>
+
+                <a href="{% url 'college:student_register' %}"
+                   class="btn btn-primary w-100">
+
+                    <i class="fa-solid fa-user-plus me-2"></i>
+                    Register as Student
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Teacher Registration -->
+    <div class="col-md-5 col-lg-4">
+
+        <div class="card registration-card h-100 border-0 shadow-sm">
+
+            <div class="card-body text-center p-5">
+
+                <div class="registration-icon teacher-icon mb-4">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+
+                <h3 class="fw-bold mb-3">
+                    Teacher Registration
+                </h3>
+
+                <p class="text-muted mb-4">
+                    Register as a teacher and manage subjects,
+                    assignments, attendance and student results.
+                </p>
+
+                <a href="{% url 'college:teacher_register' %}"
+                   class="btn btn-success w-100">
+
+                    <i class="fa-solid fa-user-plus me-2"></i>
+                    Register as Teacher
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Login -->
+<div class="text-center mt-5">
+
+    <p class="text-muted mb-2">
+        Already have an account?
+    </p>
+
+    <a href="{% url 'college:login' %}"
+       class="fw-semibold text-decoration-none">
+
+        Login here
+
+    </a>
+
+</div>
+
+</div>
+
+<style>
+
+.registration-card {
+    border-radius: 18px;
+    transition: all 0.3s ease;
+}
+
+.registration-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+.registration-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 34px;
+}
+
+.student-icon {
+    background-color: #e8f1ff;
+    color: #0d6efd;
+}
+
+.teacher-icon {
+    background-color: #e9f8ef;
+    color: #198754;
+}
+
+.registration-card h3 {
+    font-size: 22px;
+}
+
+.registration-card p {
+    line-height: 1.7;
+}
+
+</style>
+
+{% endblock %}

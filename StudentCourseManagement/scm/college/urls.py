@@ -22,6 +22,7 @@ app_name='college'
 urlpatterns = [
     path('', views.home, name='home'),
     path('register/', views.register, name='register'),
+    path('signup/', views.signup, name='signup'),
     path('student/register/', views.student_register, name='student_register'),
     path('pending-students/', views.pending_students, name='pending_students'),
     path('approve-student/<int:student_id>/', views.approve_student, name='approve_student'),
