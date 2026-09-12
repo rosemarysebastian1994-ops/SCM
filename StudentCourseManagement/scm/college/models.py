@@ -36,6 +36,12 @@ class Teacher(models.Model):
 
     is_approved = models.BooleanField(default=False)
 
+    profile_photo = models.ImageField(
+        upload_to='profile_photos/',
+        default='profile_photos/user-default.jpg',
+        blank=True
+    )
+
     def __str__(self):
         return self.user.get_full_name() or self.user.username
 
@@ -53,6 +59,12 @@ class Student(models.Model):
     )
 
     is_approved = models.BooleanField(default=False)
+
+    profile_photo = models.ImageField(
+        upload_to='profile_photos/',
+        default='profile_photos/user-default.jpg',
+        blank=True
+    )
 
     def __str__(self):
         return self.user.get_full_name() or self.user.username

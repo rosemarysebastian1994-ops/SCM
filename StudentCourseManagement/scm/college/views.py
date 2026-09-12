@@ -34,7 +34,7 @@ def student_register(request):
 
     if request.method == "POST":
 
-        form = StudentRegistrationForm(request.POST)
+        form = StudentRegistrationForm(request.POST, request.FILES)
 
         if form.is_valid():
 
@@ -43,7 +43,7 @@ def student_register(request):
                 first_name=form.cleaned_data['first_name'],
                 last_name=form.cleaned_data['last_name'],
                 email=form.cleaned_data['email'],
-                password=form.cleaned_data['password1']
+                password=form.cleaned_data['password1'],
             )
 
             student = Student.objects.create(
@@ -52,6 +52,7 @@ def student_register(request):
                 year=form.cleaned_data['year'],
                 phone=form.cleaned_data['phone'],
                 department=form.cleaned_data['department'],
+                profile_photo=form.cleaned_data.get('profile_photo'),
                 is_approved=False
             )
 
@@ -120,7 +121,7 @@ def teacher_register(request):
 
     if request.method == "POST":
 
-        form = TeacherRegistrationForm(request.POST)
+        form = TeacherRegistrationForm(request.POST, request.FILES)
 
         if form.is_valid():
 
@@ -137,6 +138,7 @@ def teacher_register(request):
                 phone=form.cleaned_data['phone'],
                 qualification=form.cleaned_data['qualification'],
                 department=form.cleaned_data['department'],
+                profile_photo=form.cleaned_data.get('profile_photo'),
                 is_approved=False
             )
 
@@ -240,7 +242,7 @@ def login_user(request):
                 if not student.is_approved:
                     messages.warning(
                         request,
-                        "Your account is awaiting approval from the Admin/HOD."
+                        "Your account is awaiting approval from the Admin."
                     )
 
                     return redirect("college:login")

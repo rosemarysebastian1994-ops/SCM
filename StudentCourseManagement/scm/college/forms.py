@@ -82,6 +82,15 @@ class StudentRegistrationForm(UserCreationForm):
             'class': 'form-select'
         })
     )
+    profile_photo = forms.ImageField(
+        required=False,
+        widget=forms.ClearableFileInput(
+            attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }
+        )
+    )
 
 class TeacherRegistrationForm(UserCreationForm):
 
@@ -152,6 +161,16 @@ class TeacherRegistrationForm(UserCreationForm):
         widget=forms.Select(attrs={
             'class': 'form-select'
         })
+    )
+
+    profile_photo = forms.ImageField(
+        required=False,
+        widget=forms.ClearableFileInput(
+            attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }
+        )
     )
 
 class DepartmentForm(forms.ModelForm):

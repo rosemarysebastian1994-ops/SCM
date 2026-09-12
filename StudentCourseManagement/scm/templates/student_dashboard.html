@@ -65,6 +65,21 @@
                     <span class="d-none d-md-inline-block me-3 text-muted">
                         Hi, <strong>{{ user.username }}</strong>
                     </span>
+                    <div class="d-flex align-items-center">
+
+							<img src="{{ logged_in_student.profile_photo.url }}"
+								 alt="Profile"
+								 class="rounded-circle me-2"
+								 style="width:40px;
+										height:40px;
+										object-fit:cover;
+										border:2px solid #fff;">
+
+							<span>
+								{{ logged_in_student.user.get_full_name|default:logged_in_student.user.username }}
+							</span>
+
+					</div>
 
                     <a href="{% url 'college:logout' %}"
                        class="btn btn-outline-danger rounded-pill px-4">
