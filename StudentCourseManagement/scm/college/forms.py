@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Department, Teacher, Student, Course, Subject, Enrollment, Assignment, Submission
+from .models import Department, Teacher, Student, Course, Subject, Enrollment, Assignment, Submission, FeeStructure, \
+    StudentFee, Payment
 from django.utils import timezone
 
 class StudentRegistrationForm(UserCreationForm):
@@ -447,3 +448,228 @@ class StudentProfileForm(forms.ModelForm):
     class Meta:
         model = Student
         fields = ['admission_no', 'year', 'phone', 'department']
+
+class FeeStructureForm(forms.ModelForm):
+
+    semester = forms.ChoiceField(
+        choices=[
+            ('S1', 'Semester 1'),
+            ('S2', 'Semester 2'),
+            ('S3', 'Semester 3'),
+            ('S4', 'Semester 4'),
+            ('S5', 'Semester 5'),
+            ('S6', 'Semester 6'),
+            ('S7', 'Semester 7'),
+            ('S8', 'Semester 8'),
+        ],
+        widget=forms.Select(
+            attrs={
+                'class': 'form-select'
+            }
+        )
+    )
+
+    class Meta:
+        model = FeeStructure
+
+        fields = [
+            'course',
+            'semester',
+            'fee_name',
+            'amount',
+            'due_date',
+            'description'
+        ]
+
+        widgets = {
+            'course': forms.Select(
+                attrs={
+                    'class': 'form-select'
+                }
+            ),
+
+            'fee_name': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'e.g. Tuition Fee'
+                }
+            ),
+
+            'amount': forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter amount',
+                    'step': '0.01'
+                }
+            ),
+
+            'due_date': forms.DateInput(
+                attrs={
+                    'type': 'date',
+                    'class': 'form-control'
+                }
+            ),
+
+            'description': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 3,
+                    'placeholder': 'Optional description'
+                }
+            ),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        course = cleaned_data.get('course')
+        semester = cleaned_data.get('semester')
+        fee_name = cleaned_data.get('fee_name')
+
+        if course and semester and fee_name:
+
+            exists = FeeStructure.objects.filter(
+                course=course,
+                semester=semester,
+                fee_name__iexact=fee_name.strip()
+            ).exclude(
+                pk=self.instance.pk
+            ).exists()
+
+            if exists:
+                raise forms.ValidationError(
+                    "This fee already exists for this course and semester."
+                )
+
+        return cleaned_data
+
+class StudentFeeForm(forms.ModelForm):
+
+    class Meta:
+        model = StudentFee
+
+        fields = [
+            'student',
+            'fee_structure',
+            'payment_plan',
+        ]
+
+        widgets = {
+            'student': forms.Select(
+                attrs={
+                    'class': 'form-select'
+                }
+            ),
+
+            'fee_structure': forms.Select(
+                attrs={
+                    'class': 'form-select'
+                }
+            ),
+
+            'payment_plan': forms.Select(
+                attrs={
+                    'class': 'form-select'
+                }
+            ),
+        }
+
+    def clean(self):
+
+        cleaned_data = super().clean()
+
+        student = cleaned_data.get('student')
+        fee_structure = cleaned_data.get('fee_structure')
+
+        if student and fee_structure:
+
+            exists = StudentFee.objects.filter(
+                student=student,
+                fee_structure=fee_structure
+            ).exclude(
+                pk=self.instance.pk
+            ).exists()
+
+            if exists:
+                raise forms.ValidationError(
+                    "This fee has already been assigned to this student."
+                )
+
+        return cleaned_data
+
+class PaymentForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Payment
+
+        fields = [
+            'student_fee',
+            'amount',
+            'payment_method',
+            'transaction_id',
+            'remarks',
+        ]
+
+        widgets = {
+
+            'student_fee': forms.Select(
+                attrs={
+                    'class': 'form-select'
+                }
+            ),
+
+            'amount': forms.NumberInput(
+                attrs={
+                    'class': 'form-control',
+                    'step': '0.01',
+                    'min': '0.01'
+                }
+            ),
+
+            'payment_method': forms.Select(
+                attrs={
+                    'class': 'form-select'
+                }
+            ),
+
+            'transaction_id': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Enter transaction ID'
+                }
+            ),
+
+            'remarks': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 3,
+                    'placeholder': 'Optional remarks'
+                }
+            ),
+        }
+
+    def clean(self):
+
+        cleaned_data = super().clean()
+
+        student_fee = cleaned_data.get('student_fee')
+        amount = cleaned_data.get('amount')
+
+        if student_fee and amount:
+
+            if amount <= 0:
+
+                raise forms.ValidationError(
+                    "Payment amount must be greater than zero."
+                )
+
+            if amount > student_fee.balance:
+
+                raise forms.ValidationError(
+                    f"Payment cannot exceed the "
+                    f"remaining balance of "
+                    f"₹{student_fee.balance:.2f}."
+                )
+
+        return cleaned_data

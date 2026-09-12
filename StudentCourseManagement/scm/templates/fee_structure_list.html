@@ -1,0 +1,746 @@
+{% extends 'admin_dashboard.html' %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            {{ message }}
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+            </button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="fw-bold mb-1">
+            Fee Structures
+        </h2>
+
+        <p class="text-muted mb-0">
+            Manage course and semester fee structures.
+        </p>
+    </div>
+
+    <button
+        type="button"
+        class="btn btn-success rounded-pill px-4"
+        data-bs-toggle="modal"
+        data-bs-target="#addFeeModal">
+
+        <i class="fa-solid fa-plus me-1"></i>
+        Add Fee
+
+    </button>
+
+</div>
+
+
+<div class="card border-0 shadow-sm rounded-4">
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>Course</th>
+                        <th>Semester</th>
+                        <th>Fee</th>
+                        <th>Amount</th>
+                        <th>Due Date</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for fee in fee_structures %}
+
+                    <tr>
+
+                        <td>
+                            {{ fee.course.course_name }}
+                        </td>
+
+                        <td>
+                            {{ fee.semester }}
+                        </td>
+
+                        <td class="fw-semibold">
+                            {{ fee.fee_name }}
+                        </td>
+
+                        <td>
+                            ₹{{ fee.amount }}
+                        </td>
+
+                        <td>
+                            {% if fee.due_date %}
+                                {{ fee.due_date }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ fee.description|default:"—" }}
+                        </td>
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="btn btn-primary btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editFeeModal{{ fee.id }}">
+
+                                <i class="fa-regular fa-pen-to-square"></i>
+
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn btn-danger btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteFeeModal{{ fee.id }}">
+
+                                <i class="fa-solid fa-trash"></i>
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- EDIT MODAL -->
+
+                    <div
+                        class="modal fade"
+                        id="editFeeModal{{ fee.id }}"
+                        tabindex="-1">
+
+                        <div class="modal-dialog modal-dialog-centered">
+
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+
+                                    <h5 class="modal-title">
+                                        <i class="fa-solid fa-pen-to-square text-primary me-2"></i>
+                                        Edit Fee Structure
+                                    </h5>
+
+                                    <button
+                                        type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal">
+                                    </button>
+
+                                </div>
+
+                                <form
+                                    id="editFeeForm{{ fee.id }}"
+                                    method="POST"
+                                    action="{% url 'college:fee_structure_update' fee.id %}">
+
+                                    {% csrf_token %}
+
+                                    <div class="modal-body">
+                                        <div
+                                            id="editFeeErrors"
+                                            class="alert alert-danger d-none">
+                                        </div>
+                                        <div class="mb-3">
+
+                                            <label class="form-label fw-semibold">
+                                                Course
+                                            </label>
+
+                                            <select
+                                                name="course"
+                                                class="form-select"
+                                                required>
+
+                                                {% for course in form.fields.course.queryset %}
+
+                                                    <option
+                                                        value="{{ course.id }}"
+                                                        {% if course.id == fee.course.id %}
+                                                            selected
+                                                        {% endif %}>
+
+                                                        {{ course.course_name }}
+
+                                                    </option>
+
+                                                {% endfor %}
+
+                                            </select>
+
+                                        </div>
+
+
+                                        <div class="mb-3">
+
+                                            <label class="form-label fw-semibold">
+                                                Semester
+                                            </label>
+
+                                            <select
+                                                name="semester"
+                                                class="form-select"
+                                                required>
+
+                                                <option value="S1" {% if fee.semester == "S1" %}selected{% endif %}>Semester 1</option>
+                                                <option value="S2" {% if fee.semester == "S2" %}selected{% endif %}>Semester 2</option>
+                                                <option value="S3" {% if fee.semester == "S3" %}selected{% endif %}>Semester 3</option>
+                                                <option value="S4" {% if fee.semester == "S4" %}selected{% endif %}>Semester 4</option>
+                                                <option value="S5" {% if fee.semester == "S5" %}selected{% endif %}>Semester 5</option>
+                                                <option value="S6" {% if fee.semester == "S6" %}selected{% endif %}>Semester 6</option>
+                                                <option value="S7" {% if fee.semester == "S7" %}selected{% endif %}>Semester 7</option>
+                                                <option value="S8" {% if fee.semester == "S8" %}selected{% endif %}>Semester 8</option>
+
+                                            </select>
+
+                                        </div>
+
+
+                                        <div class="mb-3">
+
+                                            <label class="form-label fw-semibold">
+                                                Fee Name
+                                            </label>
+
+                                            <input
+                                                type="text"
+                                                name="fee_name"
+                                                class="form-control"
+                                                value="{{ fee.fee_name }}"
+                                                required>
+
+                                        </div>
+
+
+                                        <div class="mb-3">
+
+                                            <label class="form-label fw-semibold">
+                                                Amount
+                                            </label>
+
+                                            <input
+                                                type="number"
+                                                name="amount"
+                                                class="form-control"
+                                                step="0.01"
+                                                value="{{ fee.amount }}"
+                                                required>
+
+                                        </div>
+
+
+                                        <div class="mb-3">
+
+                                            <label class="form-label fw-semibold">
+                                                Due Date
+                                            </label>
+
+                                            <input
+                                                type="date"
+                                                name="due_date"
+                                                class="form-control"
+                                                value="{{ fee.due_date|date:'Y-m-d' }}">
+
+                                        </div>
+
+
+                                        <div class="mb-3">
+
+                                            <label class="form-label fw-semibold">
+                                                Description
+                                            </label>
+
+                                            <textarea
+                                                name="description"
+                                                class="form-control"
+                                                rows="3">{{ fee.description }}</textarea>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="modal-footer">
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-secondary"
+                                            data-bs-dismiss="modal">
+                                            Cancel
+                                        </button>
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-primary">
+                                            Update Fee
+                                        </button>
+
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DELETE MODAL -->
+
+                    <div
+                        class="modal fade"
+                        id="deleteFeeModal{{ fee.id }}"
+                        tabindex="-1">
+
+                        <div class="modal-dialog modal-dialog-centered">
+
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+
+                                    <h5 class="modal-title">
+                                        Confirm Delete
+                                    </h5>
+
+                                    <button
+                                        type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal">
+                                    </button>
+
+                                </div>
+
+                                <div class="modal-body text-center">
+
+                                    <i
+                                        class="fa-solid fa-triangle-exclamation text-danger"
+                                        style="font-size: 45px;">
+                                    </i>
+
+                                    <h5 class="mt-3">
+                                        Delete "{{ fee.fee_name }}"?
+                                    </h5>
+
+                                    <p class="text-muted">
+                                        This action cannot be undone.
+                                    </p>
+
+                                </div>
+
+                                <div class="modal-footer justify-content-center">
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-light border"
+                                        data-bs-dismiss="modal">
+                                        Cancel
+                                    </button>
+
+                                    <form
+                                        method="POST"
+                                        action="{% url 'college:fee_structure_delete' fee.id %}">
+
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-danger">
+                                            Delete
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    {% empty %}
+
+                    <tr>
+                        <td
+                            colspan="7"
+                            class="text-center text-muted py-4">
+
+                            No fee structures found.
+
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<!-- ADD FEE MODAL -->
+
+<div
+    class="modal fade"
+    id="addFeeModal"
+    tabindex="-1">
+
+<div class="modal-dialog modal-dialog-centered">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h5 class="modal-title">
+                <i class="fa-solid fa-money-bill-wave text-success me-2"></i>
+                Add Fee Structure
+            </h5>
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal">
+            </button>
+
+        </div>
+
+
+        <form
+            id="addFeeForm"
+            method="POST"
+            action="{% url 'college:fee_structure_create' %}">
+
+            {% csrf_token %}
+
+            <div class="modal-body">
+                <div
+                    id="addFeeErrors"
+                    class="alert alert-danger d-none">
+                </div>
+                {% for field in form %}
+
+                    <div class="mb-3">
+
+                        <label
+                            for="{{ field.id_for_label }}"
+                            class="form-label fw-semibold">
+
+                            {{ field.label }}
+
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.errors %}
+
+                            <div class="text-danger small mt-1">
+                                {{ field.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+                {% if form.non_field_errors %}
+
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn btn-success">
+
+                    <i class="fa-solid fa-plus me-1"></i>
+                    Add Fee
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</div>
+
+{% if form.errors and edit_modal_id %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const modalElement = document.getElementById(
+        "{{ edit_modal_id }}"
+    );
+
+    if (modalElement) {
+
+        const modal = new bootstrap.Modal(
+            modalElement
+        );
+
+        modal.show();
+    }
+
+});
+
+</script>
+
+{% endif %}
+
+<script>
+
+document.getElementById("addFeeForm").addEventListener(
+    "submit",
+    function (event) {
+
+        event.preventDefault();
+
+        const form = this;
+
+        const errorBox =
+            document.getElementById("addFeeErrors");
+
+        errorBox.classList.add("d-none");
+        errorBox.innerHTML = "";
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+
+            method: "POST",
+
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            },
+
+            body: formData
+
+        })
+
+        .then(response => {
+
+            return response.json().then(data => ({
+                ok: response.ok,
+                data: data
+            }));
+
+        })
+
+        .then(result => {
+
+            if (result.ok && result.data.success) {
+
+                // Close the modal
+                const modalElement =
+                    document.getElementById("addFeeModal");
+
+                const modal =
+                    bootstrap.Modal.getInstance(modalElement);
+
+                modal.hide();
+
+                // Reload only after successful creation
+                location.reload();
+
+                return;
+            }
+
+            errorBox.classList.remove("d-none");
+
+            let html = "";
+
+            if (result.data.errors) {
+
+                Object.values(result.data.errors).forEach(
+                    function (errors) {
+
+                        errors.forEach(
+                            function (message) {
+
+                                html += `
+                                    <div>${message}</div>
+                                `;
+
+                            }
+                        );
+
+                    }
+                );
+
+            }
+
+            errorBox.innerHTML = html;
+
+        })
+
+        .catch(error => {
+
+            errorBox.classList.remove("d-none");
+
+            errorBox.innerHTML =
+                "An unexpected error occurred. Please try again.";
+
+            console.error(error);
+
+        });
+
+    }
+);
+
+</script>
+
+<script>
+
+document.getElementById("editFeeForm").addEventListener(
+    "submit",
+    function (event) {
+
+        event.preventDefault();
+
+        const form = this;
+
+        const errorBox =
+            document.getElementById("editFeeErrors");
+
+        errorBox.classList.add("d-none");
+        errorBox.innerHTML = "";
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+
+            method: "POST",
+
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            },
+
+            body: formData
+
+        })
+
+        .then(response => {
+
+            return response.json().then(data => ({
+                ok: response.ok,
+                data: data
+            }));
+
+        })
+
+        .then(result => {
+
+            if (result.ok && result.data.success) {
+
+                // Close the modal
+                const modalElement =
+                    document.getElementById("editFeeModal");
+
+                const modal =
+                    bootstrap.Modal.getInstance(modalElement);
+
+                modal.hide();
+
+                // Reload only after successful creation
+                location.reload();
+
+                return;
+            }
+
+            errorBox.classList.remove("d-none");
+
+            let html = "";
+
+            if (result.data.errors) {
+
+                Object.values(result.data.errors).forEach(
+                    function (errors) {
+
+                        errors.forEach(
+                            function (message) {
+
+                                html += `
+                                    <div>${message}</div>
+                                `;
+
+                            }
+                        );
+
+                    }
+                );
+
+            }
+
+            errorBox.innerHTML = html;
+
+        })
+
+        .catch(error => {
+
+            errorBox.classList.remove("d-none");
+
+            errorBox.innerHTML =
+                "An unexpected error occurred. Please try again.";
+
+            console.error(error);
+
+        });
+
+    }
+);
+
+</script>
+{% endblock %}

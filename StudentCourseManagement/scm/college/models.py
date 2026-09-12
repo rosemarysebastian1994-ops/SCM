@@ -35,7 +35,7 @@ class Teacher(models.Model):
     )
 
     is_approved = models.BooleanField(default=False)
-    
+
     def __str__(self):
         return self.user.get_full_name() or self.user.username
 
@@ -82,6 +82,185 @@ class Course(models.Model):
 
     def __str__(self):
         return f"{self.course_name} - {self.department.name}"
+
+class FeeStructure(models.Model):
+
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='fee_structures'
+    )
+
+    semester = models.CharField(
+        max_length=20
+    )
+
+    fee_name = models.CharField(
+        max_length=100
+    )
+
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    due_date = models.DateField(
+        null=True,
+        blank=True
+    )
+
+    description = models.TextField(
+        blank=True
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['course', 'semester', 'fee_name'],
+                name='unique_fee_structure'
+            )
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.course.course_name} - "
+            f"{self.semester} - "
+            f"{self.fee_name}"
+        )
+
+class StudentFee(models.Model):
+
+    PAYMENT_PLAN_CHOICES = [
+        ('QUARTERLY', 'Quarterly'),
+        ('HALF_YEARLY', 'Half-Yearly'),
+        ('YEARLY', 'Yearly'),
+    ]
+
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        related_name='fees'
+    )
+
+    fee_structure = models.ForeignKey(
+        FeeStructure,
+        on_delete=models.CASCADE,
+        related_name='student_fees'
+    )
+
+    payment_plan = models.CharField(
+        max_length=20,
+        choices=PAYMENT_PLAN_CHOICES,
+        default='YEARLY'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['student', 'fee_structure'],
+                name='unique_student_fee_structure'
+            )
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.student} - "
+            f"{self.fee_structure}"
+        )
+
+    @property
+    def amount_due(self):
+        return self.fee_structure.amount
+
+    @property
+    def amount_paid(self):
+        return sum(
+            payment.amount
+            for payment in self.payments.all()
+        )
+
+    @property
+    def balance(self):
+        return self.amount_due - self.amount_paid
+
+    @property
+    def installment_count(self):
+
+        return {
+            'QUARTERLY': 4,
+            'HALF_YEARLY': 2,
+            'YEARLY': 1,
+        }[self.payment_plan]
+
+    @property
+    def installment_amount(self):
+        return (
+            self.amount_due /
+            self.installment_count
+        )
+
+    @property
+    def status(self):
+
+        if self.amount_paid <= 0:
+            return 'PENDING'
+
+        if self.amount_paid < self.amount_due:
+            return 'PARTIAL'
+
+        return 'PAID'
+
+class Payment(models.Model):
+
+    PAYMENT_METHOD_CHOICES = [
+        ('CASH', 'Cash'),
+        ('UPI', 'UPI'),
+        ('CARD', 'Card'),
+        ('BANK', 'Bank Transfer'),
+        ('ONLINE', 'Online'),
+    ]
+
+    student_fee = models.ForeignKey(
+        StudentFee,
+        on_delete=models.CASCADE,
+        related_name='payments'
+    )
+
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    payment_date = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PAYMENT_METHOD_CHOICES
+    )
+
+    transaction_id = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    remarks = models.TextField(
+        blank=True
+    )
+
+    class Meta:
+        ordering = ['-payment_date']
+
+    def __str__(self):
+        return (
+            f"{self.student_fee.student.user.username} - "
+            f"₹{self.amount}"
+        )
 
 class Subject(models.Model):
     course = models.ForeignKey(

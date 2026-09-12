@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import StudentRegistrationForm, TeacherRegistrationForm, DepartmentForm, TeacherForm, StudentForm, CourseForm, EnrollmentForm, \
-    AssignmentForm, SubmissionForm, GradeSubmissionForm, UserUpdateForm, TeacherProfileForm, StudentProfileForm, SubjectForm
-from .models import Department, Teacher, Student, Course, Enrollment, Assignment, Submission, Attendance, HOD, Subject
+    AssignmentForm, SubmissionForm, GradeSubmissionForm, UserUpdateForm, TeacherProfileForm, StudentProfileForm, SubjectForm, \
+    FeeStructureForm, StudentFeeForm, PaymentForm
+from .models import Department, Teacher, Student, Course, Enrollment, Assignment, Submission, Attendance, HOD, Subject, \
+    FeeStructure, StudentFee, Payment
 from django.contrib import messages
 from django.utils import timezone
 from .decorators import teacher_required, student_required, hod_required, admin_required
@@ -1356,27 +1358,12 @@ class SearchCourse(View):
         c=Course.objects.filter(Q(course_name__icontains=query)|Q(course_code__icontains=query)|Q(description__icontains=query))
         return render(request, 'search.html', {'courses':c})
 
-import json
-from django.http import JsonResponse
-from django.conf import settings
-from django.views.decorators.http import require_POST
 from openai import OpenAI
-
-
 import json
 
 from django.http import JsonResponse
 from django.conf import settings
 from django.views.decorators.http import require_POST
-
-from .models import (
-    Student,
-    Teacher,
-    Course,
-    Enrollment,
-    Assignment,
-    Submission
-)
 
 @require_POST
 def chatbot(request):
@@ -2126,3 +2113,373 @@ def assign_subject(request, subject_id):
             "subject": subject,
             "teachers": teachers,
         })
+
+@login_required
+@admin_required
+def fee_structure_list(request):
+
+    fee_structures = FeeStructure.objects.select_related(
+        'course'
+    ).order_by(
+        'course__course_name',
+        'semester',
+        'fee_name'
+    )
+
+    form = FeeStructureForm()
+
+    return render(
+        request,
+        'fee_structure_list.html',
+        {
+            'fee_structures': fee_structures,
+            'form': form
+        }
+    )
+
+@login_required
+@admin_required
+def fee_structure_create(request):
+    if request.method != "POST":
+        return JsonResponse({
+            "success": False,
+            "message": "Invalid request."
+        }, status=400)
+
+    form = FeeStructureForm(request.POST)
+
+    if form.is_valid():
+
+        fee = form.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": "Fee structure added successfully.",
+            "fee_id": fee.id
+        })
+
+    errors = {}
+
+    for field, field_errors in form.errors.items():
+        errors[field] = [
+            str(error)
+            for error in field_errors
+        ]
+
+    return JsonResponse({
+        "success": False,
+        "errors": errors
+    }, status=400)
+
+
+@login_required
+@admin_required
+def fee_structure_update(request, fee_id):
+    fee = get_object_or_404(
+        FeeStructure,
+        id=fee_id
+    )
+
+    if request.method != "POST":
+        return JsonResponse({
+            "success": False,
+            "message": "Invalid request."
+        }, status=400)
+
+    form = FeeStructureForm(
+        request.POST,
+        instance=fee
+    )
+
+    if form.is_valid():
+
+        form.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": "Fee structure updated successfully."
+        })
+
+    errors = {}
+
+    for field, field_errors in form.errors.items():
+        errors[field] = [
+            str(error)
+            for error in field_errors
+        ]
+
+    return JsonResponse({
+        "success": False,
+        "errors": errors
+    }, status=400)
+
+
+@login_required
+@admin_required
+def fee_structure_delete(request, fee_id):
+
+    fee = get_object_or_404(
+        FeeStructure,
+        id=fee_id
+    )
+
+    if request.method == "POST":
+
+        fee.delete()
+
+        messages.success(
+            request,
+            "Fee structure deleted successfully."
+        )
+
+        return redirect(
+            'college:fee_structure_list'
+        )
+
+    return redirect(
+        'college:fee_structure_list'
+    )
+
+@login_required
+@admin_required
+def student_fee_list(request):
+    student_fees = (
+        StudentFee.objects
+        .select_related(
+            'student',
+            'student__user',
+            'fee_structure',
+            'fee_structure__course'
+        )
+        .order_by(
+            'student__user__username',
+            'fee_structure__course__course_name'
+        )
+    )
+
+    form = StudentFeeForm()
+
+    return render(
+        request,
+        'student_fee_list.html',
+        {
+            'student_fees': student_fees,
+            'form': form,
+        }
+    )
+
+@login_required
+@admin_required
+def student_fee_create(request):
+
+    if request.method == "POST":
+
+        form = StudentFeeForm(request.POST)
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Student fee assigned successfully."
+            )
+
+            return redirect(
+                'college:student_fee_list'
+            )
+
+        student_fees = (
+            StudentFee.objects
+            .select_related(
+                'student',
+                'student__user',
+                'fee_structure',
+                'fee_structure__course'
+            )
+        )
+
+        return render(
+            request,
+            'student_fee_list.html',
+            {
+                'student_fees': student_fees,
+                'form': form,
+            }
+        )
+
+    return redirect(
+        'college:student_fee_list'
+    )
+
+@login_required
+@admin_required
+def student_fee_update(request, fee_id):
+    student_fee = get_object_or_404(
+        StudentFee,
+        id=fee_id
+    )
+
+    if request.method == "POST":
+
+        form = StudentFeeForm(
+            request.POST,
+            instance=student_fee
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Student fee updated successfully."
+            )
+
+            return redirect(
+                'college:student_fee_list'
+            )
+
+        student_fees = (
+            StudentFee.objects
+            .select_related(
+                'student',
+                'student__user',
+                'fee_structure',
+                'fee_structure__course'
+            )
+        )
+
+        return render(
+            request,
+            'student_fee_list.html',
+            {
+                'student_fees': student_fees,
+                'form': form,
+                'edit_student_fee_id': student_fee.id,
+                'edit_modal_id': (
+                    f'editStudentFeeModal{student_fee.id}'
+                ),
+            }
+        )
+
+    return redirect(
+        'college:student_fee_list'
+    )
+
+@login_required
+@admin_required
+def student_fee_delete(request, fee_id):
+
+    student_fee = get_object_or_404(
+        StudentFee,
+        id=fee_id
+    )
+
+    if request.method == "POST":
+
+        student_fee.delete()
+
+        messages.success(
+            request,
+            "Student fee deleted successfully."
+        )
+
+        return redirect(
+            'college:student_fee_list'
+        )
+
+    return redirect(
+        'college:student_fee_list'
+    )
+
+@login_required
+@admin_required
+def payment_list(request):
+
+    payments = Payment.objects.select_related(
+        'student_fee',
+        'student_fee__student',
+        'student_fee__student__user',
+        'student_fee__fee_structure',
+        'student_fee__fee_structure__course'
+    ).order_by('-payment_date')
+
+    form = PaymentForm()
+
+    return render(
+        request,
+        'payment_list.html',
+        {
+            'payments': payments,
+            'form': form,
+        }
+    )
+
+
+@login_required
+@admin_required
+def payment_create(request):
+
+    payments = Payment.objects.select_related(
+        'student_fee',
+        'student_fee__student',
+        'student_fee__student__user',
+        'student_fee__fee_structure',
+        'student_fee__fee_structure__course'
+    ).order_by('-payment_date')
+
+
+    if request.method == 'POST':
+
+        form = PaymentForm(request.POST)
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Payment recorded successfully."
+            )
+
+            return redirect(
+                'college:payment_list'
+            )
+
+    else:
+
+        form = PaymentForm()
+
+
+    return render(
+        request,
+        'payment_list.html',
+        {
+            'payments': payments,
+            'form': form,
+        }
+    )
+
+
+@login_required
+@admin_required
+def payment_delete(request, payment_id):
+
+    payment = get_object_or_404(
+        Payment,
+        id=payment_id
+    )
+
+    if request.method == 'POST':
+
+        payment.delete()
+
+        messages.success(
+            request,
+            "Payment deleted successfully."
+        )
+
+    return redirect(
+        'college:payment_list'
+    )

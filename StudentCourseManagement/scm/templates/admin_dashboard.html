@@ -2,7 +2,9 @@
 {% load static %}
 
 {% block navbar %}
-
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
 <style>
     #main-menu ul {
         white-space: nowrap;
@@ -660,6 +662,178 @@
                 </a>
 
             </div>
+            <div class="col-lg-6 col-xl-4 mb-4">
+
+
+<div class="card border-0 shadow-sm rounded-4 h-100">
+
+    <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-start">
+
+            <div>
+
+                <span class="text-muted small fw-semibold">
+                    FINANCE
+                </span>
+
+                <h4 class="fw-bold mt-2 mb-2">
+                    Fee Structure
+                </h4>
+
+                <p class="text-muted mb-4">
+                    Create and manage course and semester fee structures.
+                </p>
+
+            </div>
+
+
+            <div
+                class="d-flex align-items-center justify-content-center
+                       rounded-circle bg-success bg-opacity-10 text-success"
+                style="width: 65px; height: 65px;">
+
+                <i class="fa-solid fa-money-bill-wave fa-2x"></i>
+
+            </div>
+
+        </div>
+
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <div>
+
+                <small class="text-muted d-block">
+                    Manage
+                </small>
+
+                <span class="fw-semibold">
+                    Course Fees
+                </span>
+
+            </div>
+
+
+            <a
+                href="{% url 'college:fee_structure_list' %}"
+                class="btn btn-success rounded-pill px-4">
+
+                Open
+                <i class="fa-solid fa-arrow-right ms-2"></i>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+<div class="col-lg-6 col-xl-4 mb-4">
+
+    <div class="card border-0 shadow-sm rounded-4 h-100">
+
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between align-items-start">
+
+                <div>
+
+                    <span class="text-muted small fw-semibold">
+                        FINANCE
+                    </span>
+
+                    <h4 class="fw-bold mt-2 mb-2">
+                        Student Fees
+                    </h4>
+
+                    <p class="text-muted mb-4">
+                        Assign fee structures and manage student fee plans.
+                    </p>
+
+                </div>
+
+                <div
+                    class="d-flex align-items-center justify-content-center
+                           rounded-circle bg-primary bg-opacity-10 text-primary"
+                    style="width: 65px; height: 65px;">
+
+                    <i class="fa-solid fa-user-tag fa-2x"></i>
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="{% url 'college:student_fee_list' %}"
+                class="btn btn-primary rounded-pill px-4">
+
+                Manage Student Fees
+                <i class="fa-solid fa-arrow-right ms-2"></i>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+            <div class="col-md-4">
+
+    <a
+        href="{% url 'college:payment_list' %}"
+        class="text-decoration-none">
+
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+
+            <div class="card-body p-4">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="bg-success-subtle rounded-circle p-3 me-3">
+
+                        <i class="fa-solid fa-credit-card text-success fs-4"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h5 class="fw-bold mb-1">
+                            Payments
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            Record and manage payments
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </a>
+
+</div>
+
+<style>
+
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10) !important;
+    }
+
+</style>
 
         </div>
 
