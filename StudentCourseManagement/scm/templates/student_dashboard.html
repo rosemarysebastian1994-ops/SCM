@@ -2,769 +2,6 @@
 {% load static %}
 
 {% block navbar %}
-<style>
-.student-info img {
-    width: 46px !important;
-    height: 46px !important;
-    max-width: 46px !important;
-    max-height: 46px !important;
-    min-width: 46px !important;
-    min-height: 46px !important;
-    object-fit: cover !important;
-    border-radius: 50% !important;
-    display: block !important;
-}
-</style>
-<!-- ================= NAVBAR ================= -->
-<div id="navigation"
-     class="navbar-light bg-white site-navigation shadow-sm">
-
-    <div class="container-fluid px-lg-5">
-
-        <div class="row align-items-center">
-
-            <!-- LOGO -->
-            <div class="col-xl-2 col-lg-2 col-md-3 col-6">
-
-                <div class="site-logo">
-
-                    <a href="{% url 'college:student_dashboard' %}">
-                        <img src="{% static 'img/logo.png' %}"
-                             alt="Smart Study">
-                    </a>
-
-                </div>
-
-            </div>
-
-
-            <!-- NAVIGATION -->
-            <div class="col-xl-7 col-lg-7 d-none d-lg-flex justify-content-center">
-
-                <nav id="main-menu">
-
-                    <ul class="mb-0">
-
-                        <li>
-                            <a href="{% url 'college:student_dashboard' %}"
-                               class="active">
-                                <i class="fa fa-home me-1"></i>
-                                Home
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{% url 'college:my_subjects' %}">
-                                <i class="fa fa-book me-1"></i>
-                                My Subjects
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{% url 'college:student_assignments' %}">
-                                <i class="fa fa-file-text me-1"></i>
-                                Assignments
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{% url 'college:my_results' %}">
-                                <i class="fa fa-graduation-cap me-1"></i>
-                                Grades
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{% url 'college:my_attendance' %}">
-                                <i class="fa fa-calendar-check-o me-1"></i>
-                                Attendance
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{% url 'college:student_fees' %}">
-                                <i class="fa fa-credit-card me-1"></i>
-                                Fees
-                            </a>
-                        </li>
-
-                    </ul>
-
-                </nav>
-
-            </div>
-
-
-            <!-- USER -->
-            <div class="col-xl-3 col-lg-3 col-md-9 col-6">
-
-                {% if user.is_authenticated %}
-
-                <div class="student-user">
-
-                    <div class="student-info">
-
-                        {% if logged_in_student.profile_photo %}
-                            <img src="{{ logged_in_student.profile_photo.url }}"
-                                 alt="Profile"
-                                 class="student-avatar">
-                        {% else %}
-                            <div class="student-avatar default-avatar">
-                                <i class="fa fa-user"></i>
-                            </div>
-                        {% endif %}
-
-                        <div class="student-name d-none d-md-block">
-
-                            <small>Welcome</small>
-
-                            <strong>
-                                {{ logged_in_student.user.get_full_name|default:logged_in_student.user.username }}
-                            </strong>
-
-                        </div>
-
-                        </div>
-
-                    </a>
-
-
-                    <a href="{% url 'college:logout' %}"
-                       class="btn btn-outline-danger logout-btn">
-
-                        <i class="fa fa-sign-out"></i>
-
-                        <span class="d-none d-md-inline">
-                            Logout
-                        </span>
-
-                    </a>
-
-                </div>
-
-                {% else %}
-
-                <div class="text-end">
-
-                    <a href="{% url 'college:login' %}"
-                       class="btn btn-outline-primary rounded-pill px-4">
-
-                        Sign In
-
-                    </a>
-
-                    <a href="{% url 'college:register' %}"
-                       class="btn btn-primary rounded-pill px-4 ms-2">
-
-                        Sign Up
-
-                    </a>
-
-                </div>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-{% endblock %}
-
-
-{% block content %}
-
-<!-- =====================================================
-     HERO SECTION
-===================================================== -->
-
-<section class="student-hero">
-
-    <div class="container">
-
-        <div class="row align-items-center">
-
-            <!-- LEFT -->
-            <div class="col-lg-7">
-
-                <span class="hero-badge">
-
-                    <i class="fa fa-graduation-cap me-2"></i>
-
-                    STUDENT DASHBOARD
-
-                </span>
-
-
-                <h1 class="hero-title">
-
-                    Welcome back,
-                    <span>
-                        {{ logged_in_student.user.get_full_name|default:user.username }}
-                    </span>
-
-                    👋
-
-                </h1>
-
-
-                <p class="hero-text">
-
-                    Stay on top of your learning journey.
-                    Access your subjects, assignments, grades,
-                    attendance and payments all in one place.
-
-                </p>
-
-
-                <div class="hero-buttons">
-
-                    <a href="{% url 'college:my_subjects' %}"
-                       class="btn btn-primary btn-lg rounded-pill px-4">
-
-                        <i class="fa fa-book me-2"></i>
-
-                        My Subjects
-
-                    </a>
-
-
-                    <a href="{% url 'college:student_assignments' %}"
-                       class="btn btn-light btn-lg rounded-pill px-4">
-
-                        <i class="fa fa-tasks me-2"></i>
-
-                        View Assignments
-
-                    </a>
-
-                </div>
-
-            </div>
-
-
-            <!-- RIGHT -->
-            <div class="col-lg-5 text-center mt-5 mt-lg-0">
-
-                <div class="hero-image-wrapper">
-
-                    <div class="floating-circle circle-one"></div>
-
-                    <div class="floating-circle circle-two"></div>
-
-                    <img src="{% static 'img/home-img2.png' %}"
-                         class="img-fluid hero-image"
-                         alt="Student learning">
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     QUICK STATS
-===================================================== -->
-
-<section class="stats-section">
-
-    <div class="container">
-
-        <div class="row g-4">
-
-            <!-- SUBJECTS -->
-            <div class="col-lg-3 col-md-6">
-
-                <a href="{% url 'college:my_subjects' %}"
-                   class="text-decoration-none">
-
-                    <div class="stat-card">
-
-                        <div class="stat-icon icon-blue">
-
-                            <i class="fa fa-book"></i>
-
-                        </div>
-
-                        <div>
-
-                            <span class="stat-label">
-                                Academic
-                            </span>
-
-                            <div class="stat-number">
-                                {{ total_subjects }}
-                            </div>
-
-                            <h4>
-                                Total Subjects
-                            </h4>
-
-                            <small>
-                                View enrolled subjects
-                            </small>
-
-                        </div>
-
-                        <i class="fa fa-arrow-right stat-arrow"></i>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-
-            <!-- ASSIGNMENTS -->
-            <div class="col-lg-3 col-md-6">
-
-                <a href="{% url 'college:student_assignments' %}"
-                   class="text-decoration-none">
-
-                    <div class="stat-card">
-
-                        <div class="stat-icon icon-green">
-
-                            <i class="fa fa-tasks"></i>
-
-                        </div>
-
-                        <div>
-
-                            <span class="stat-label">
-                                Learning
-                            </span>
-
-                            <div class="stat-number">
-                                {{ pending_assignments }}
-                            </div>
-
-                            <h4>
-                                Pending Assignments
-                            </h4>
-
-                            <small>
-                                Submit your work
-                            </small>
-
-                        </div>
-
-                        <i class="fa fa-arrow-right stat-arrow"></i>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-
-            <!-- GRADES -->
-            <div class="col-lg-3 col-md-6">
-
-                <a href="{% url 'college:my_results' %}"
-                   class="text-decoration-none">
-
-                    <div class="stat-card">
-
-                        <div class="stat-icon icon-orange">
-
-                            <i class="fa fa-graduation-cap"></i>
-
-                        </div>
-
-                        <div>
-
-                            <span class="stat-label">
-                                Performance
-                            </span>
-
-                            <div class="stat-number">
-                                {{ average_grade }}
-                            </div>
-
-                            <h4>
-                                Average Grade
-                            </h4>
-
-                            <small>
-                                Check your results
-                            </small>
-
-                        </div>
-
-                        <i class="fa fa-arrow-right stat-arrow"></i>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-
-            <!-- ATTENDANCE -->
-            <div class="col-lg-3 col-md-6">
-
-                <a href="{% url 'college:my_attendance' %}"
-                   class="text-decoration-none">
-
-                    <div class="stat-card">
-
-                        <div class="stat-icon icon-red">
-
-                            <i class="fa fa-calendar-check-o"></i>
-
-                        </div>
-
-                        <div>
-
-                            <span class="stat-label">
-                                Participation
-                            </span>
-
-                            <div class="stat-number">
-                                {{ attendance_percentage }}%
-                            </div>
-
-                            <h4>
-                                Attendance
-                            </h4>
-
-                            <small>
-                                Track attendance
-                            </small>
-
-                        </div>
-
-                        <i class="fa fa-arrow-right stat-arrow"></i>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     ACADEMIC HUB
-===================================================== -->
-
-<section class="academic-section">
-
-    <div class="container">
-
-        <div class="section-heading text-center">
-
-            <span>
-                STUDENT PORTAL
-            </span>
-
-            <h2>
-                Your Academic Space
-            </h2>
-
-            <p>
-                Everything you need to manage your academic journey.
-            </p>
-
-        </div>
-
-
-        <div class="row g-4">
-
-
-            <!-- SUBJECTS -->
-            <div class="col-lg-4 col-md-6">
-
-                <a href="{% url 'college:my_subjects' %}"
-                   class="text-decoration-none">
-
-                    <div class="feature-card">
-
-                        <div class="feature-icon blue-gradient">
-
-                            <i class="fa fa-book"></i>
-
-                        </div>
-
-                        <h4>
-                            My Subjects
-                        </h4>
-
-                        <p>
-                            Explore your enrolled courses and
-                            subjects with all the important details.
-                        </p>
-
-                        <span class="feature-link">
-                            Explore Subjects
-                            <i class="fa fa-arrow-right"></i>
-                        </span>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-
-            <!-- ASSIGNMENTS -->
-            <div class="col-lg-4 col-md-6">
-
-                <a href="{% url 'college:student_assignments' %}"
-                   class="text-decoration-none">
-
-                    <div class="feature-card">
-
-                        <div class="feature-icon green-gradient">
-
-                            <i class="fa fa-file-text"></i>
-
-                        </div>
-
-                        <h4>
-                            Assignments
-                        </h4>
-
-                        <p>
-                            View upcoming assignments, submit your
-                            work and keep track of deadlines.
-                        </p>
-
-                        <span class="feature-link">
-                            View Assignments
-                            <i class="fa fa-arrow-right"></i>
-                        </span>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-
-            <!-- GRADES -->
-            <div class="col-lg-4 col-md-6">
-
-                <a href="{% url 'college:my_results' %}"
-                   class="text-decoration-none">
-
-                    <div class="feature-card">
-
-                        <div class="feature-icon orange-gradient">
-
-                            <i class="fa fa-line-chart"></i>
-
-                        </div>
-
-                        <h4>
-                            Academic Performance
-                        </h4>
-
-                        <p>
-                            Review your marks, grades and
-                            academic performance.
-                        </p>
-
-                        <span class="feature-link">
-                            View Grades
-                            <i class="fa fa-arrow-right"></i>
-                        </span>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-
-            <!-- ATTENDANCE -->
-            <div class="col-lg-4 col-md-6">
-
-                <a href="{% url 'college:my_attendance' %}"
-                   class="text-decoration-none">
-
-                    <div class="feature-card">
-
-                        <div class="feature-icon red-gradient">
-
-                            <i class="fa fa-calendar-check-o"></i>
-
-                        </div>
-
-                        <h4>
-                            Attendance
-                        </h4>
-
-                        <p>
-                            Monitor your attendance and
-                            stay on track with your classes.
-                        </p>
-
-                        <span class="feature-link">
-                            Check Attendance
-                            <i class="fa fa-arrow-right"></i>
-                        </span>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-
-            <!-- FEES -->
-            <div class="col-lg-4 col-md-6">
-
-                <a href="{% url 'college:student_fees' %}"
-                   class="text-decoration-none">
-
-                    <div class="feature-card">
-
-                        <div class="feature-icon purple-gradient">
-
-                            <i class="fa fa-credit-card"></i>
-
-                        </div>
-
-                        <h4>
-                            Fees & Payments
-                        </h4>
-
-                        <p>
-                            Check your fee details and
-                            payment information.
-                        </p>
-
-                        <span class="feature-link">
-                            View Fees
-                            <i class="fa fa-arrow-right"></i>
-                        </span>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-
-            <!-- PROFILE -->
-            <div class="col-lg-4 col-md-6">
-
-                <a href="{% url 'college:student_profile' %}"
-                   class="text-decoration-none">
-
-                    <div class="feature-card">
-
-                        <div class="feature-icon teal-gradient">
-
-                            <i class="fa fa-user"></i>
-
-                        </div>
-
-                        <h4>
-                            My Profile
-                        </h4>
-
-                        <p>
-                            View and update your profile
-                            information and password.
-                        </p>
-
-                        <span class="feature-link">
-                            View Profile
-                            <i class="fa fa-arrow-right"></i>
-                        </span>
-
-                    </div>
-
-                </a>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     MOTIVATION BANNER
-===================================================== -->
-
-<section class="motivation-section">
-
-    <div class="container">
-
-        <div class="motivation-card">
-
-            <div class="row align-items-center">
-
-                <div class="col-lg-8">
-
-                    <span class="motivation-badge">
-
-                        <i class="fa fa-lightbulb-o me-2"></i>
-
-                        SMART STUDY
-
-                    </span>
-
-
-                    <h2>
-                        Learn today.
-                        Grow tomorrow.
-                    </h2>
-
-
-                    <p>
-                        Keep your assignments up to date,
-                        maintain good attendance and
-                        keep working towards your academic goals.
-                    </p>
-
-                </div>
-
-
-                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-
-                    <a href="{% url 'college:student_assignments' %}"
-                       class="btn btn-primary btn-lg rounded-pill px-4">
-
-                        <i class="fa fa-rocket me-2"></i>
-
-                        Start Learning
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
 
 <!-- =====================================================
      CUSTOM CSS
@@ -1843,5 +1080,759 @@
 }
 
 </style>
+<!-- ================= NAVBAR ================= -->
+<div id="navigation"
+     class="navbar-light bg-white site-navigation shadow-sm">
+
+    <div class="container-fluid px-lg-5">
+
+        <div class="row align-items-center">
+
+            <!-- LOGO -->
+            <div class="col-xl-2 col-lg-2 col-md-3 col-6">
+
+                <div class="site-logo">
+
+                    <a href="{% url 'college:student_dashboard' %}">
+                        <img src="{% static 'img/logo.png' %}"
+                             alt="Smart Study">
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+            <div class="col-xl-7 col-lg-7 d-none d-lg-flex justify-content-center">
+
+                <nav id="main-menu">
+
+                    <ul class="mb-0">
+
+                        <li>
+                            <a href="{% url 'college:student_dashboard' %}"
+                               class="{% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
+                                <i class="fa fa-home me-1"></i>
+                                Home
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:my_subjects' %}"
+                                class="{% if request.resolver_match.url_name == 'my_subjects' %}active{% endif %}">
+                                <i class="fa fa-book me-1"></i>
+                                My Subjects
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:student_assignments' %}"
+                                class="{% if request.resolver_match.url_name == 'student_assignments' %}active{% endif %}">
+                                <i class="fa fa-file-text me-1"></i>
+                                Assignments
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:my_results' %}"
+                                class="{% if request.resolver_match.url_name == 'my_results' %}active{% endif %}">
+                                <i class="fa fa-graduation-cap me-1"></i>
+                                Grades
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:my_attendance' %}"
+                                class="{% if request.resolver_match.url_name == 'my_attendance' %}active{% endif %}">
+                                <i class="fa fa-calendar-check-o me-1"></i>
+                                Attendance
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'college:student_fees' %}"
+                                class="{% if request.resolver_match.url_name == 'student_fees' %}active{% endif %}">
+                                <i class="fa fa-credit-card me-1"></i>
+                                Fees
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </nav>
+
+            </div>
+
+
+            <!-- USER -->
+            <div class="col-xl-3 col-lg-3 col-md-9 col-6">
+
+                {% if user.is_authenticated %}
+
+                <div class="student-user">
+
+                    <div class="student-info">
+
+                        {% if logged_in_student.profile_photo %}
+                            <img src="{{ logged_in_student.profile_photo.url }}"
+                                 alt="Profile"
+                                 class="student-avatar">
+                        {% else %}
+                            <div class="student-avatar default-avatar">
+                                <i class="fa fa-user"></i>
+                            </div>
+                        {% endif %}
+
+                        <div class="student-name d-none d-md-block">
+
+                            <small>Welcome</small>
+
+                            <strong>
+                                {{ logged_in_student.user.get_full_name|default:logged_in_student.user.username }}
+                            </strong>
+
+                        </div>
+
+                        </div>
+
+                    </a>
+
+
+                    <a href="{% url 'college:logout' %}"
+                       class="btn btn-outline-danger logout-btn">
+
+                        <i class="fa fa-sign-out"></i>
+
+                        <span class="d-none d-md-inline">
+                            Logout
+                        </span>
+
+                    </a>
+
+                </div>
+
+                {% else %}
+
+                <div class="text-end">
+
+                    <a href="{% url 'college:login' %}"
+                       class="btn btn-outline-primary rounded-pill px-4">
+
+                        Sign In
+
+                    </a>
+
+                    <a href="{% url 'college:register' %}"
+                       class="btn btn-primary rounded-pill px-4 ms-2">
+
+                        Sign Up
+
+                    </a>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- =====================================================
+     HERO SECTION
+===================================================== -->
+
+<section class="student-hero">
+
+    <div class="container">
+
+        <div class="row align-items-center">
+
+            <!-- LEFT -->
+            <div class="col-lg-7">
+
+                <span class="hero-badge">
+
+                    <i class="fa fa-graduation-cap me-2"></i>
+
+                    STUDENT DASHBOARD
+
+                </span>
+
+
+                <h1 class="hero-title">
+
+                    Welcome back,
+                    <span>
+                        {{ logged_in_student.user.get_full_name|default:user.username }}
+                    </span>
+
+                    👋
+
+                </h1>
+
+
+                <p class="hero-text">
+
+                    Stay on top of your learning journey.
+                    Access your subjects, assignments, grades,
+                    attendance and payments all in one place.
+
+                </p>
+
+
+                <div class="hero-buttons">
+
+                    <a href="{% url 'college:my_subjects' %}"
+                       class="btn btn-primary btn-lg rounded-pill px-4">
+
+                        <i class="fa fa-book me-2"></i>
+
+                        My Subjects
+
+                    </a>
+
+
+                    <a href="{% url 'college:student_assignments' %}"
+                       class="btn btn-light btn-lg rounded-pill px-4">
+
+                        <i class="fa fa-tasks me-2"></i>
+
+                        View Assignments
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT -->
+            <div class="col-lg-5 text-center mt-5 mt-lg-0">
+
+                <div class="hero-image-wrapper">
+
+                    <div class="floating-circle circle-one"></div>
+
+                    <div class="floating-circle circle-two"></div>
+
+                    <img src="{% static 'img/home-img2.png' %}"
+                         class="img-fluid hero-image"
+                         alt="Student learning">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     QUICK STATS
+===================================================== -->
+
+<section class="stats-section">
+
+    <div class="container">
+
+        <div class="row g-4">
+
+            <!-- SUBJECTS -->
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{% url 'college:my_subjects' %}"
+                   class="text-decoration-none">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon icon-blue">
+
+                            <i class="fa fa-book"></i>
+
+                        </div>
+
+                        <div>
+
+                            <span class="stat-label">
+                                Academic
+                            </span>
+
+                            <div class="stat-number">
+                                {{ total_subjects }}
+                            </div>
+
+                            <h4>
+                                Total Subjects
+                            </h4>
+
+                            <small>
+                                View enrolled subjects
+                            </small>
+
+                        </div>
+
+                        <i class="fa fa-arrow-right stat-arrow"></i>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ASSIGNMENTS -->
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{% url 'college:student_assignments' %}"
+                   class="text-decoration-none">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon icon-green">
+
+                            <i class="fa fa-tasks"></i>
+
+                        </div>
+
+                        <div>
+
+                            <span class="stat-label">
+                                Learning
+                            </span>
+
+                            <div class="stat-number">
+                                {{ pending_assignments }}
+                            </div>
+
+                            <h4>
+                                Pending Assignments
+                            </h4>
+
+                            <small>
+                                Submit your work
+                            </small>
+
+                        </div>
+
+                        <i class="fa fa-arrow-right stat-arrow"></i>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- GRADES -->
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{% url 'college:my_results' %}"
+                   class="text-decoration-none">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon icon-orange">
+
+                            <i class="fa fa-graduation-cap"></i>
+
+                        </div>
+
+                        <div>
+
+                            <span class="stat-label">
+                                Performance
+                            </span>
+
+                            <div class="stat-number">
+                                {{ average_grade }}
+                            </div>
+
+                            <h4>
+                                Average Grade
+                            </h4>
+
+                            <small>
+                                Check your results
+                            </small>
+
+                        </div>
+
+                        <i class="fa fa-arrow-right stat-arrow"></i>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ATTENDANCE -->
+            <div class="col-lg-3 col-md-6">
+
+                <a href="{% url 'college:my_attendance' %}"
+                   class="text-decoration-none">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon icon-red">
+
+                            <i class="fa fa-calendar-check-o"></i>
+
+                        </div>
+
+                        <div>
+
+                            <span class="stat-label">
+                                Participation
+                            </span>
+
+                            <div class="stat-number">
+                                {{ attendance_percentage }}%
+                            </div>
+
+                            <h4>
+                                Attendance
+                            </h4>
+
+                            <small>
+                                Track attendance
+                            </small>
+
+                        </div>
+
+                        <i class="fa fa-arrow-right stat-arrow"></i>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     ACADEMIC HUB
+===================================================== -->
+
+<section class="academic-section">
+
+    <div class="container">
+
+        <div class="section-heading text-center">
+
+            <span>
+                STUDENT PORTAL
+            </span>
+
+            <h2>
+                Your Academic Space
+            </h2>
+
+            <p>
+                Everything you need to manage your academic journey.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+
+            <!-- SUBJECTS -->
+            <div class="col-lg-4 col-md-6">
+
+                <a href="{% url 'college:my_subjects' %}"
+                   class="text-decoration-none">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon blue-gradient">
+
+                            <i class="fa fa-book"></i>
+
+                        </div>
+
+                        <h4>
+                            My Subjects
+                        </h4>
+
+                        <p>
+                            Explore your enrolled courses and
+                            subjects with all the important details.
+                        </p>
+
+                        <span class="feature-link">
+                            Explore Subjects
+                            <i class="fa fa-arrow-right"></i>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ASSIGNMENTS -->
+            <div class="col-lg-4 col-md-6">
+
+                <a href="{% url 'college:student_assignments' %}"
+                   class="text-decoration-none">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon green-gradient">
+
+                            <i class="fa fa-file-text"></i>
+
+                        </div>
+
+                        <h4>
+                            Assignments
+                        </h4>
+
+                        <p>
+                            View upcoming assignments, submit your
+                            work and keep track of deadlines.
+                        </p>
+
+                        <span class="feature-link">
+                            View Assignments
+                            <i class="fa fa-arrow-right"></i>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- GRADES -->
+            <div class="col-lg-4 col-md-6">
+
+                <a href="{% url 'college:my_results' %}"
+                   class="text-decoration-none">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon orange-gradient">
+
+                            <i class="fa fa-line-chart"></i>
+
+                        </div>
+
+                        <h4>
+                            Academic Performance
+                        </h4>
+
+                        <p>
+                            Review your marks, grades and
+                            academic performance.
+                        </p>
+
+                        <span class="feature-link">
+                            View Grades
+                            <i class="fa fa-arrow-right"></i>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ATTENDANCE -->
+            <div class="col-lg-4 col-md-6">
+
+                <a href="{% url 'college:my_attendance' %}"
+                   class="text-decoration-none">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon red-gradient">
+
+                            <i class="fa fa-calendar-check-o"></i>
+
+                        </div>
+
+                        <h4>
+                            Attendance
+                        </h4>
+
+                        <p>
+                            Monitor your attendance and
+                            stay on track with your classes.
+                        </p>
+
+                        <span class="feature-link">
+                            Check Attendance
+                            <i class="fa fa-arrow-right"></i>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- FEES -->
+            <div class="col-lg-4 col-md-6">
+
+                <a href="{% url 'college:student_fees' %}"
+                   class="text-decoration-none">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon purple-gradient">
+
+                            <i class="fa fa-credit-card"></i>
+
+                        </div>
+
+                        <h4>
+                            Fees & Payments
+                        </h4>
+
+                        <p>
+                            Check your fee details and
+                            payment information.
+                        </p>
+
+                        <span class="feature-link">
+                            View Fees
+                            <i class="fa fa-arrow-right"></i>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- PROFILE -->
+            <div class="col-lg-4 col-md-6">
+
+                <a href="{% url 'college:student_profile' %}"
+                   class="text-decoration-none">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon teal-gradient">
+
+                            <i class="fa fa-user"></i>
+
+                        </div>
+
+                        <h4>
+                            My Profile
+                        </h4>
+
+                        <p>
+                            View and update your profile
+                            information and password.
+                        </p>
+
+                        <span class="feature-link">
+                            View Profile
+                            <i class="fa fa-arrow-right"></i>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     MOTIVATION BANNER
+===================================================== -->
+
+<section class="motivation-section">
+
+    <div class="container">
+
+        <div class="motivation-card">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-8">
+
+                    <span class="motivation-badge">
+
+                        <i class="fa fa-lightbulb-o me-2"></i>
+
+                        SMART STUDY
+
+                    </span>
+
+
+                    <h2>
+                        Learn today.
+                        Grow tomorrow.
+                    </h2>
+
+
+                    <p>
+                        Keep your assignments up to date,
+                        maintain good attendance and
+                        keep working towards your academic goals.
+                    </p>
+
+                </div>
+
+
+                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+
+                    <a href="{% url 'college:student_assignments' %}"
+                       class="btn btn-primary btn-lg rounded-pill px-4">
+
+                        <i class="fa fa-rocket me-2"></i>
+
+                        Start Learning
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
 
 {% endblock %}

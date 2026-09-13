@@ -781,44 +781,54 @@
     </div>
 
 </div>
+<div class="col-lg-6 col-xl-4 mb-4">
 
-            <div class="col-md-4">
+    <div class="card border-0 shadow-sm rounded-4 h-100">
 
-    <a
-        href="{% url 'college:payment_list' %}"
-        class="text-decoration-none">
+        <div class="card-body p-4">
 
-        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="d-flex justify-content-between align-items-start">
 
-            <div class="card-body p-4">
+                <div>
 
-                <div class="d-flex align-items-center">
+                    <span class="text-muted small fw-semibold">
+                        FINANCE
+                    </span>
 
-                    <div class="bg-success-subtle rounded-circle p-3 me-3">
+                    <h4 class="fw-bold mt-2 mb-2">
+                        Payments
+                    </h4>
 
-                        <i class="fa-solid fa-credit-card text-success fs-4"></i>
+                    <p class="text-muted mb-4">
+                        Record and manage payments.
+                    </p>
 
-                    </div>
+                </div>
 
-                    <div>
+                <div
+                    class="d-flex align-items-center justify-content-center
+                           rounded-circle bg-success bg-opacity-10 text-success"
+                    style="width: 65px; height: 65px;">
 
-                        <h5 class="fw-bold mb-1">
-                            Payments
-                        </h5>
-
-                        <p class="text-muted mb-0">
-                            Record and manage payments
-                        </p>
-
-                    </div>
+                    <i class="fa-solid fa-credit-card text-success fs-4"></i>
 
                 </div>
 
             </div>
 
+
+            <a
+                href="{% url 'college:payment_list' %}"
+                class="btn btn-success rounded-pill px-4">
+
+                Manage Payment Records
+                <i class="fa-solid fa-arrow-right ms-2"></i>
+
+            </a>
+
         </div>
 
-    </a>
+    </div>
 
 </div>
 
@@ -838,7 +848,7 @@
         </div>
 
         <!-- Pending Student Approvals -->
-    <div class="col-lg-6 col-md-6">
+    <div class="col-lg-6 col-md-6 mb-3">
 
         <div class="card border-0 shadow-sm rounded-4 h-100">
 
