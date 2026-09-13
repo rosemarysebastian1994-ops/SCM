@@ -2,154 +2,243 @@
 {% load static %}
 
 {% block navbar %}
+<style>
+.student-info img {
+    width: 46px !important;
+    height: 46px !important;
+    max-width: 46px !important;
+    max-height: 46px !important;
+    min-width: 46px !important;
+    min-height: 46px !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    display: block !important;
+}
+</style>
+<!-- ================= NAVBAR ================= -->
+<div id="navigation"
+     class="navbar-light bg-white site-navigation shadow-sm">
 
-<!-- START NAVBAR -->
-<div id="navigation" class="navbar-light bg-white site-navigation shadow-sm">
+    <div class="container-fluid px-lg-5">
 
-    <div class="container-fluid">
         <div class="row align-items-center">
 
             <!-- LOGO -->
             <div class="col-xl-2 col-lg-2 col-md-3 col-6">
+
                 <div class="site-logo">
+
                     <a href="{% url 'college:student_dashboard' %}">
-                        <img src="{% static 'img/logo.png' %}" alt="Smart Study">
+                        <img src="{% static 'img/logo.png' %}"
+                             alt="Smart Study">
                     </a>
+
                 </div>
+
             </div>
+
 
             <!-- NAVIGATION -->
             <div class="col-xl-7 col-lg-7 d-none d-lg-flex justify-content-center">
+
                 <nav id="main-menu">
+
                     <ul class="mb-0">
 
                         <li>
-                            <a href="{% url 'college:student_dashboard' %}">
+                            <a href="{% url 'college:student_dashboard' %}"
+                               class="active">
+                                <i class="fa fa-home me-1"></i>
                                 Home
                             </a>
                         </li>
 
                         <li>
                             <a href="{% url 'college:my_subjects' %}">
+                                <i class="fa fa-book me-1"></i>
                                 My Subjects
                             </a>
                         </li>
 
                         <li>
                             <a href="{% url 'college:student_assignments' %}">
+                                <i class="fa fa-file-text me-1"></i>
                                 Assignments
                             </a>
                         </li>
 
                         <li>
                             <a href="{% url 'college:my_results' %}">
+                                <i class="fa fa-graduation-cap me-1"></i>
                                 Grades
                             </a>
                         </li>
 
                         <li>
                             <a href="{% url 'college:my_attendance' %}">
+                                <i class="fa fa-calendar-check-o me-1"></i>
                                 Attendance
                             </a>
                         </li>
 
+                        <li>
+                            <a href="{% url 'college:student_fees' %}">
+                                <i class="fa fa-credit-card me-1"></i>
+                                Fees
+                            </a>
+                        </li>
+
                     </ul>
+
                 </nav>
+
             </div>
 
-            <!-- USER BUTTON -->
-            <div class="col-xl-3 col-lg-3 col-md-9 col-6 text-end">
+
+            <!-- USER -->
+            <div class="col-xl-3 col-lg-3 col-md-9 col-6">
 
                 {% if user.is_authenticated %}
 
-                    <span class="d-none d-md-inline-block me-3 text-muted">
-                        Hi, <strong>{{ user.username }}</strong>
-                    </span>
-                    <div class="d-flex align-items-center">
+                <div class="student-user">
 
-							<img src="{{ logged_in_student.profile_photo.url }}"
-								 alt="Profile"
-								 class="rounded-circle me-2"
-								 style="width:40px;
-										height:40px;
-										object-fit:cover;
-										border:2px solid #fff;">
+                    <div class="student-info">
 
-							<span>
-								{{ logged_in_student.user.get_full_name|default:logged_in_student.user.username }}
-							</span>
+                        {% if logged_in_student.profile_photo %}
+                            <img src="{{ logged_in_student.profile_photo.url }}"
+                                 alt="Profile"
+                                 class="student-avatar">
+                        {% else %}
+                            <div class="student-avatar default-avatar">
+                                <i class="fa fa-user"></i>
+                            </div>
+                        {% endif %}
 
-					</div>
+                        <div class="student-name d-none d-md-block">
+
+                            <small>Welcome</small>
+
+                            <strong>
+                                {{ logged_in_student.user.get_full_name|default:logged_in_student.user.username }}
+                            </strong>
+
+                        </div>
+
+                        </div>
+
+                    </a>
+
 
                     <a href="{% url 'college:logout' %}"
-                       class="btn btn-outline-danger rounded-pill px-4">
-                        Log Out
+                       class="btn btn-outline-danger logout-btn">
+
+                        <i class="fa fa-sign-out"></i>
+
+                        <span class="d-none d-md-inline">
+                            Logout
+                        </span>
+
                     </a>
+
+                </div>
 
                 {% else %}
 
+                <div class="text-end">
+
                     <a href="{% url 'college:login' %}"
-                       class="btn btn-outline-primary rounded-pill px-3">
+                       class="btn btn-outline-primary rounded-pill px-4">
+
                         Sign In
+
                     </a>
 
                     <a href="{% url 'college:register' %}"
-                       class="btn btn-primary rounded-pill px-3 ms-2">
+                       class="btn btn-primary rounded-pill px-4 ms-2">
+
                         Sign Up
+
                     </a>
+
+                </div>
 
                 {% endif %}
 
             </div>
 
         </div>
+
     </div>
 
 </div>
-<!-- END NAVBAR -->
 
 {% endblock %}
 
 
 {% block content %}
 
-<!-- WELCOME SECTION -->
-<section class="py-5"
-         style="background: linear-gradient(135deg, #eef5ff, #f8fbff);">
+<!-- =====================================================
+     HERO SECTION
+===================================================== -->
+
+<section class="student-hero">
 
     <div class="container">
 
         <div class="row align-items-center">
 
             <!-- LEFT -->
-            <div class="col-lg-7 mb-4 mb-lg-0">
+            <div class="col-lg-7">
 
-                <div class="mb-3">
-                    <span class="badge bg-primary rounded-pill px-3 py-2">
-                        Student Dashboard
-                    </span>
-                </div>
+                <span class="hero-badge">
 
-                <h1 class="display-5 fw-bold mb-3">
+                    <i class="fa fa-graduation-cap me-2"></i>
+
+                    STUDENT DASHBOARD
+
+                </span>
+
+
+                <h1 class="hero-title">
+
                     Welcome back,
-                    <span class="text-primary">{{ user.username }}</span>!
+                    <span>
+                        {{ logged_in_student.user.get_full_name|default:user.username }}
+                    </span>
+
+                    👋
+
                 </h1>
 
-                <p class="lead text-muted mb-4">
-                    Manage your courses, assignments, grades, and attendance
-                    from one simple and convenient place.
+
+                <p class="hero-text">
+
+                    Stay on top of your learning journey.
+                    Access your subjects, assignments, grades,
+                    attendance and payments all in one place.
+
                 </p>
 
-                <div class="d-flex flex-wrap gap-2">
+
+                <div class="hero-buttons">
 
                     <a href="{% url 'college:my_subjects' %}"
                        class="btn btn-primary btn-lg rounded-pill px-4">
-                        Explore My Subjects
+
+                        <i class="fa fa-book me-2"></i>
+
+                        My Subjects
+
                     </a>
 
+
                     <a href="{% url 'college:student_assignments' %}"
-                       class="btn btn-outline-primary btn-lg rounded-pill px-4">
+                       class="btn btn-light btn-lg rounded-pill px-4">
+
+                        <i class="fa fa-tasks me-2"></i>
+
                         View Assignments
+
                     </a>
 
                 </div>
@@ -157,13 +246,17 @@
             </div>
 
 
-            <!-- RIGHT IMAGE -->
-            <div class="col-lg-5 text-center">
+            <!-- RIGHT -->
+            <div class="col-lg-5 text-center mt-5 mt-lg-0">
 
-                <div class="position-relative">
+                <div class="hero-image-wrapper">
+
+                    <div class="floating-circle circle-one"></div>
+
+                    <div class="floating-circle circle-two"></div>
 
                     <img src="{% static 'img/home-img2.png' %}"
-                         class="img-fluid"
+                         class="img-fluid hero-image"
                          alt="Student learning">
 
                 </div>
@@ -177,54 +270,52 @@
 </section>
 
 
-<!-- QUICK ACCESS -->
-<section class="py-5 bg-white">
+
+<!-- =====================================================
+     QUICK STATS
+===================================================== -->
+
+<section class="stats-section">
 
     <div class="container">
 
-        <div class="text-center mb-5">
-
-            <span class="text-primary fw-semibold">
-                QUICK ACCESS
-            </span>
-
-            <h2 class="fw-bold mt-2">
-                Your Academic Hub
-            </h2>
-
-            <p class="text-muted">
-                Access everything you need for your studies.
-            </p>
-
-        </div>
-
-
         <div class="row g-4">
 
-            <!-- COURSES -->
+            <!-- SUBJECTS -->
             <div class="col-lg-3 col-md-6">
 
                 <a href="{% url 'college:my_subjects' %}"
                    class="text-decoration-none">
 
-                    <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center
-                                dashboard-card">
+                    <div class="stat-card">
 
-                        <div class="mx-auto mb-3 d-flex align-items-center
-                                    justify-content-center rounded-circle bg-primary bg-opacity-10"
-                             style="width: 70px; height: 70px;">
+                        <div class="stat-icon icon-blue">
 
-                            <i class="fa fa-book fa-2x text-primary"></i>
+                            <i class="fa fa-book"></i>
 
                         </div>
 
-                        <h5 class="fw-bold text-dark">
-                            My Courses
-                        </h5>
+                        <div>
 
-                        <p class="text-muted mb-0">
-                            View your enrolled courses and subjects.
-                        </p>
+                            <span class="stat-label">
+                                Academic
+                            </span>
+
+                            <div class="stat-number">
+                                {{ total_subjects }}
+                            </div>
+
+                            <h4>
+                                Total Subjects
+                            </h4>
+
+                            <small>
+                                View enrolled subjects
+                            </small>
+
+                        </div>
+
+                        <i class="fa fa-arrow-right stat-arrow"></i>
 
                     </div>
 
@@ -239,24 +330,35 @@
                 <a href="{% url 'college:student_assignments' %}"
                    class="text-decoration-none">
 
-                    <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center
-                                dashboard-card">
+                    <div class="stat-card">
 
-                        <div class="mx-auto mb-3 d-flex align-items-center
-                                    justify-content-center rounded-circle bg-success bg-opacity-10"
-                             style="width: 70px; height: 70px;">
+                        <div class="stat-icon icon-green">
 
-                            <i class="fa fa-file-text fa-2x text-success"></i>
+                            <i class="fa fa-tasks"></i>
 
                         </div>
 
-                        <h5 class="fw-bold text-dark">
-                            Assignments
-                        </h5>
+                        <div>
 
-                        <p class="text-muted mb-0">
-                            View, submit, and track your assignments.
-                        </p>
+                            <span class="stat-label">
+                                Learning
+                            </span>
+
+                            <div class="stat-number">
+                                {{ pending_assignments }}
+                            </div>
+
+                            <h4>
+                                Pending Assignments
+                            </h4>
+
+                            <small>
+                                Submit your work
+                            </small>
+
+                        </div>
+
+                        <i class="fa fa-arrow-right stat-arrow"></i>
 
                     </div>
 
@@ -271,24 +373,35 @@
                 <a href="{% url 'college:my_results' %}"
                    class="text-decoration-none">
 
-                    <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center
-                                dashboard-card">
+                    <div class="stat-card">
 
-                        <div class="mx-auto mb-3 d-flex align-items-center
-                                    justify-content-center rounded-circle bg-warning bg-opacity-10"
-                             style="width: 70px; height: 70px;">
+                        <div class="stat-icon icon-orange">
 
-                            <i class="fa fa-graduation-cap fa-2x text-warning"></i>
+                            <i class="fa fa-graduation-cap"></i>
 
                         </div>
 
-                        <h5 class="fw-bold text-dark">
-                            Grades
-                        </h5>
+                        <div>
 
-                        <p class="text-muted mb-0">
-                            Check your marks and academic performance.
-                        </p>
+                            <span class="stat-label">
+                                Performance
+                            </span>
+
+                            <div class="stat-number">
+                                {{ average_grade }}
+                            </div>
+
+                            <h4>
+                                Average Grade
+                            </h4>
+
+                            <small>
+                                Check your results
+                            </small>
+
+                        </div>
+
+                        <i class="fa fa-arrow-right stat-arrow"></i>
 
                     </div>
 
@@ -303,24 +416,35 @@
                 <a href="{% url 'college:my_attendance' %}"
                    class="text-decoration-none">
 
-                    <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center
-                                dashboard-card">
+                    <div class="stat-card">
 
-                        <div class="mx-auto mb-3 d-flex align-items-center
-                                    justify-content-center rounded-circle bg-danger bg-opacity-10"
-                             style="width: 70px; height: 70px;">
+                        <div class="stat-icon icon-red">
 
-                            <i class="fa fa-calendar-check-o fa-2x text-danger"></i>
+                            <i class="fa fa-calendar-check-o"></i>
 
                         </div>
 
-                        <h5 class="fw-bold text-dark">
-                            Attendance
-                        </h5>
+                        <div>
 
-                        <p class="text-muted mb-0">
-                            Track your attendance by subject.
-                        </p>
+                            <span class="stat-label">
+                                Participation
+                            </span>
+
+                            <div class="stat-number">
+                                {{ attendance_percentage }}%
+                            </div>
+
+                            <h4>
+                                Attendance
+                            </h4>
+
+                            <small>
+                                Track attendance
+                            </small>
+
+                        </div>
+
+                        <i class="fa fa-arrow-right stat-arrow"></i>
 
                     </div>
 
@@ -335,44 +459,300 @@
 </section>
 
 
-<!-- STUDY BANNER -->
-<section class="py-5"
-         style="background: linear-gradient(135deg, #f8f9fa, #eef5ff);">
+
+<!-- =====================================================
+     ACADEMIC HUB
+===================================================== -->
+
+<section class="academic-section">
 
     <div class="container">
 
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="section-heading text-center">
 
-            <div class="card-body p-4 p-lg-5">
+            <span>
+                STUDENT PORTAL
+            </span>
 
-                <div class="row align-items-center">
+            <h2>
+                Your Academic Space
+            </h2>
 
-                    <div class="col-lg-8">
+            <p>
+                Everything you need to manage your academic journey.
+            </p>
 
-                        <span class="badge bg-primary rounded-pill px-3 py-2 mb-3">
-                            SMART STUDY
-                        </span>
+        </div>
 
-                        <h2 class="fw-bold">
-                            Stay organized. Learn better.
-                        </h2>
 
-                        <p class="text-muted mb-0">
-                            Smart Study brings your courses, subjects,
-                            assignments, grades, and attendance together
-                            in one connected academic platform.
+        <div class="row g-4">
+
+
+            <!-- SUBJECTS -->
+            <div class="col-lg-4 col-md-6">
+
+                <a href="{% url 'college:my_subjects' %}"
+                   class="text-decoration-none">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon blue-gradient">
+
+                            <i class="fa fa-book"></i>
+
+                        </div>
+
+                        <h4>
+                            My Subjects
+                        </h4>
+
+                        <p>
+                            Explore your enrolled courses and
+                            subjects with all the important details.
                         </p>
 
-                    </div>
-
-                    <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-
-                        <a href="{% url 'college:student_assignments' %}"
-                           class="btn btn-primary btn-lg rounded-pill px-4">
-                            Start Learning
-                        </a>
+                        <span class="feature-link">
+                            Explore Subjects
+                            <i class="fa fa-arrow-right"></i>
+                        </span>
 
                     </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ASSIGNMENTS -->
+            <div class="col-lg-4 col-md-6">
+
+                <a href="{% url 'college:student_assignments' %}"
+                   class="text-decoration-none">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon green-gradient">
+
+                            <i class="fa fa-file-text"></i>
+
+                        </div>
+
+                        <h4>
+                            Assignments
+                        </h4>
+
+                        <p>
+                            View upcoming assignments, submit your
+                            work and keep track of deadlines.
+                        </p>
+
+                        <span class="feature-link">
+                            View Assignments
+                            <i class="fa fa-arrow-right"></i>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- GRADES -->
+            <div class="col-lg-4 col-md-6">
+
+                <a href="{% url 'college:my_results' %}"
+                   class="text-decoration-none">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon orange-gradient">
+
+                            <i class="fa fa-line-chart"></i>
+
+                        </div>
+
+                        <h4>
+                            Academic Performance
+                        </h4>
+
+                        <p>
+                            Review your marks, grades and
+                            academic performance.
+                        </p>
+
+                        <span class="feature-link">
+                            View Grades
+                            <i class="fa fa-arrow-right"></i>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- ATTENDANCE -->
+            <div class="col-lg-4 col-md-6">
+
+                <a href="{% url 'college:my_attendance' %}"
+                   class="text-decoration-none">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon red-gradient">
+
+                            <i class="fa fa-calendar-check-o"></i>
+
+                        </div>
+
+                        <h4>
+                            Attendance
+                        </h4>
+
+                        <p>
+                            Monitor your attendance and
+                            stay on track with your classes.
+                        </p>
+
+                        <span class="feature-link">
+                            Check Attendance
+                            <i class="fa fa-arrow-right"></i>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- FEES -->
+            <div class="col-lg-4 col-md-6">
+
+                <a href="{% url 'college:student_fees' %}"
+                   class="text-decoration-none">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon purple-gradient">
+
+                            <i class="fa fa-credit-card"></i>
+
+                        </div>
+
+                        <h4>
+                            Fees & Payments
+                        </h4>
+
+                        <p>
+                            Check your fee details and
+                            payment information.
+                        </p>
+
+                        <span class="feature-link">
+                            View Fees
+                            <i class="fa fa-arrow-right"></i>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <!-- PROFILE -->
+            <div class="col-lg-4 col-md-6">
+
+                <a href="{% url 'college:student_profile' %}"
+                   class="text-decoration-none">
+
+                    <div class="feature-card">
+
+                        <div class="feature-icon teal-gradient">
+
+                            <i class="fa fa-user"></i>
+
+                        </div>
+
+                        <h4>
+                            My Profile
+                        </h4>
+
+                        <p>
+                            View and update your profile
+                            information and password.
+                        </p>
+
+                        <span class="feature-link">
+                            View Profile
+                            <i class="fa fa-arrow-right"></i>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     MOTIVATION BANNER
+===================================================== -->
+
+<section class="motivation-section">
+
+    <div class="container">
+
+        <div class="motivation-card">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-8">
+
+                    <span class="motivation-badge">
+
+                        <i class="fa fa-lightbulb-o me-2"></i>
+
+                        SMART STUDY
+
+                    </span>
+
+
+                    <h2>
+                        Learn today.
+                        Grow tomorrow.
+                    </h2>
+
+
+                    <p>
+                        Keep your assignments up to date,
+                        maintain good attendance and
+                        keep working towards your academic goals.
+                    </p>
+
+                </div>
+
+
+                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+
+                    <a href="{% url 'college:student_assignments' %}"
+                       class="btn btn-primary btn-lg rounded-pill px-4">
+
+                        <i class="fa fa-rocket me-2"></i>
+
+                        Start Learning
+
+                    </a>
 
                 </div>
 
@@ -385,42 +765,1082 @@
 </section>
 
 
-<!-- CUSTOM STYLES -->
+
+<!-- =====================================================
+     CUSTOM CSS
+===================================================== -->
+
 <style>
 
-    #navigation {
-        padding: 15px 0;
+/* =========================
+   NAVBAR
+========================= */
+
+#navigation {
+
+    padding: 12px 0;
+
+    position: relative;
+
+    z-index: 100;
+
+}
+
+.site-logo img {
+
+    max-height: 55px;
+
+    width: auto;
+
+}
+
+
+#main-menu {
+
+    width: 100%;
+
+}
+
+#main-menu > ul {
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    gap: 4px !important;
+
+    list-style: none !important;
+
+    padding: 0 !important;
+
+    margin: 0 !important;
+
+    white-space: nowrap !important;
+
+}
+
+#main-menu > ul > li {
+
+    display: block !important;
+
+    float: none !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+}
+
+#main-menu > ul > li > a {
+
+    display: inline-flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    gap: 7px !important;
+
+    padding: 12px 12px !important;
+
+    color: #495057 !important;
+
+    font-size: 13px !important;
+
+    font-weight: 700 !important;
+
+    line-height: 1.2 !important;
+
+    text-transform: uppercase;
+
+    text-decoration: none !important;
+
+    border-radius: 10px !important;
+
+    white-space: nowrap !important;
+
+    transition: all .25s ease;
+
+}
+
+#main-menu > ul > li > a i {
+
+    display: inline-block !important;
+
+    width: auto !important;
+
+    margin: 0 !important;
+
+    font-size: 15px !important;
+
+    line-height: 1 !important;
+
+}
+
+#main-menu > ul > li > a:hover,
+#main-menu > ul > li > a.active {
+
+    color: #0d6efd !important;
+
+    background: rgba(13,110,253,.08) !important;
+
+}
+
+#navigation .container-fluid {
+
+    max-width: 100%;
+
+}
+
+#navigation .row {
+
+    min-height: 72px;
+
+}
+
+#navigation .site-logo {
+
+    display: flex;
+
+    align-items: center;
+
+}
+
+#navigation .student-user {
+
+    min-width: max-content;
+
+}
+
+@media (max-width: 1199px) {
+
+    #main-menu > ul > li > a {
+
+        padding-left: 8px !important;
+
+        padding-right: 8px !important;
+
+        font-size: 12px !important;
+
     }
 
-    #main-menu ul {
-        display: flex;
-        align-items: center;
-        gap: 8px;
+}
+
+@media (max-width: 991px) {
+
+    #main-menu > ul {
+
+        display: none !important;
+
     }
 
-    #main-menu ul li a {
-        padding: 10px 15px;
-        font-weight: 500;
-        transition: 0.3s ease;
+}
+
+
+.student-user {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 15px;
+
+}
+
+
+.student-info {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+.student-profile-link {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    border-radius: 14px;
+
+    padding: 4px 8px;
+
+    transition: all .25s ease;
+
+}
+
+.student-profile-link:hover {
+
+    background: #f3f7ff;
+
+}
+
+.student-profile-link:hover .student-name strong {
+
+    color: #0d6efd;
+
+}
+
+
+.student-avatar {
+
+    width: 44px;
+
+    height: 44px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 3px solid #e8f0ff;
+
+}
+
+
+.default-avatar {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #e9f2ff;
+
+    color: #0d6efd;
+
+    font-size: 18px;
+
+}
+
+
+.student-name {
+
+    display: flex;
+
+    flex-direction: column;
+
+    line-height: 1.2;
+
+}
+
+
+.student-name small {
+
+    color: #8b95a1;
+
+    font-size: 11px;
+
+}
+
+
+.student-name strong {
+
+    color: #212529;
+
+    font-size: 14px;
+
+}
+
+
+.logout-btn {
+
+    border-radius: 50px;
+
+    padding: 7px 15px;
+
+    font-weight: 600;
+
+}
+
+
+
+/* =========================
+   HERO
+========================= */
+
+.student-hero {
+
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 75px 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eef5ff 0%,
+            #f8fbff 50%,
+            #ffffff 100%
+        );
+
+}
+
+
+.student-hero::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 350px;
+
+    height: 350px;
+
+    border-radius: 50%;
+
+    background: rgba(13,110,253,.06);
+
+    right: -120px;
+
+    top: -150px;
+
+}
+
+
+.student-hero::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 220px;
+
+    height: 220px;
+
+    border-radius: 50%;
+
+    background: rgba(111,66,193,.05);
+
+    left: -100px;
+
+    bottom: -100px;
+
+}
+
+
+.hero-badge {
+
+    display: inline-block;
+
+    padding: 8px 17px;
+
+    border-radius: 50px;
+
+    background: rgba(13,110,253,.1);
+
+    color: #0d6efd;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: .5px;
+
+    margin-bottom: 18px;
+
+}
+
+
+.hero-title {
+
+    font-size: clamp(38px, 5vw, 58px);
+
+    font-weight: 800;
+
+    line-height: 1.1;
+
+    color: #172033;
+
+    margin-bottom: 22px;
+
+}
+
+
+.hero-title span {
+
+    color: #0d6efd;
+
+}
+
+
+.hero-text {
+
+    max-width: 650px;
+
+    font-size: 18px;
+
+    line-height: 1.7;
+
+    color: #6c757d;
+
+    margin-bottom: 30px;
+
+}
+
+
+.hero-buttons {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+}
+
+
+.hero-image-wrapper {
+
+    position: relative;
+
+    display: inline-block;
+
+}
+
+
+.hero-image {
+
+    position: relative;
+
+    z-index: 2;
+
+    max-height: 330px;
+
+}
+
+
+.floating-circle {
+
+    position: absolute;
+
+    border-radius: 50%;
+
+}
+
+
+.circle-one {
+
+    width: 120px;
+
+    height: 120px;
+
+    background: rgba(13,110,253,.10);
+
+    top: 10px;
+
+    right: 20px;
+
+}
+
+
+.circle-two {
+
+    width: 80px;
+
+    height: 80px;
+
+    background: rgba(25,135,84,.10);
+
+    bottom: 30px;
+
+    left: 20px;
+
+}
+
+
+
+/* =========================
+   STATS
+========================= */
+
+.stats-section {
+
+    padding: 35px 0;
+
+    background: #fff;
+
+}
+
+
+.stat-card {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    min-height: 138px;
+
+    padding: 20px;
+
+    background: #fff;
+
+    border: 1px solid #edf0f5;
+
+    border-radius: 18px;
+
+    box-shadow: 0 7px 25px rgba(0,0,0,.05);
+
+    transition: all .3s ease;
+
+}
+
+
+.stat-card:hover {
+
+    transform: translateY(-6px);
+
+    box-shadow: 0 15px 35px rgba(0,0,0,.09);
+
+}
+
+
+.stat-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    flex-shrink: 0;
+
+    border-radius: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 22px;
+
+}
+
+
+.icon-blue {
+
+    background: #eaf2ff;
+
+    color: #0d6efd;
+
+}
+
+
+.icon-green {
+
+    background: #e9f8f0;
+
+    color: #198754;
+
+}
+
+
+.icon-orange {
+
+    background: #fff4df;
+
+    color: #fd7e14;
+
+}
+
+
+.icon-red {
+
+    background: #fdecef;
+
+    color: #dc3545;
+
+}
+
+
+.stat-label {
+
+    display: block;
+
+    color: #8b95a1;
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .7px;
+
+}
+
+
+.stat-card h4 {
+
+    color: #212529;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    margin: 1px 0 2px;
+
+}
+
+.stat-number {
+
+    color: #172033;
+
+    font-size: 30px;
+
+    line-height: 1;
+
+    font-weight: 800;
+
+    margin: 4px 0 5px;
+
+}
+
+.stat-card:hover .stat-number {
+
+    color: #0d6efd;
+
+}
+
+
+.stat-card small {
+
+    color: #8b95a1;
+
+    font-size: 12px;
+
+}
+
+
+.stat-arrow {
+
+    margin-left: auto;
+
+    color: #adb5bd;
+
+    transition: all .3s ease;
+
+}
+
+
+.stat-card:hover .stat-arrow {
+
+    color: #0d6efd;
+
+    transform: translateX(4px);
+
+}
+
+
+
+/* =========================
+   ACADEMIC SECTION
+========================= */
+
+.academic-section {
+
+    padding: 75px 0;
+
+    background: #f8fafc;
+
+}
+
+
+.section-heading {
+
+    margin-bottom: 45px;
+
+}
+
+
+.section-heading span {
+
+    color: #0d6efd;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+
+}
+
+
+.section-heading h2 {
+
+    margin-top: 10px;
+
+    margin-bottom: 10px;
+
+    font-size: 36px;
+
+    font-weight: 800;
+
+    color: #172033;
+
+}
+
+
+.section-heading p {
+
+    color: #7b8490;
+
+}
+
+
+.feature-card {
+
+    height: 100%;
+
+    padding: 30px;
+
+    background: #fff;
+
+    border-radius: 22px;
+
+    border: 1px solid #edf0f5;
+
+    box-shadow: 0 7px 25px rgba(0,0,0,.04);
+
+    transition: all .3s ease;
+
+}
+
+
+.feature-card:hover {
+
+    transform: translateY(-8px);
+
+    box-shadow: 0 18px 40px rgba(0,0,0,.09);
+
+}
+
+
+.feature-icon {
+
+    width: 65px;
+
+    height: 65px;
+
+    border-radius: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #fff;
+
+    font-size: 24px;
+
+    margin-bottom: 22px;
+
+}
+
+
+.blue-gradient {
+
+    background: linear-gradient(135deg,#0d6efd,#4f9cff);
+
+}
+
+
+.green-gradient {
+
+    background: linear-gradient(135deg,#198754,#42b883);
+
+}
+
+
+.orange-gradient {
+
+    background: linear-gradient(135deg,#fd7e14,#ffae54);
+
+}
+
+
+.red-gradient {
+
+    background: linear-gradient(135deg,#dc3545,#f16b79);
+
+}
+
+
+.purple-gradient {
+
+    background: linear-gradient(135deg,#6f42c1,#9b70e5);
+
+}
+
+
+.teal-gradient {
+
+    background: linear-gradient(135deg,#0f9d9a,#43c7c4);
+
+}
+
+
+.feature-card h4 {
+
+    color: #172033;
+
+    font-size: 20px;
+
+    font-weight: 750;
+
+    margin-bottom: 12px;
+
+}
+
+
+.feature-card p {
+
+    color: #747e89;
+
+    line-height: 1.7;
+
+    margin-bottom: 20px;
+
+}
+
+
+.feature-link {
+
+    color: #0d6efd;
+
+    font-weight: 700;
+
+    font-size: 14px;
+
+}
+
+
+.feature-link i {
+
+    margin-left: 6px;
+
+    transition: all .2s ease;
+
+}
+
+
+.feature-card:hover .feature-link i {
+
+    transform: translateX(5px);
+
+}
+
+
+
+/* =========================
+   MOTIVATION
+========================= */
+
+.motivation-section {
+
+    padding: 70px 0;
+
+    background: #fff;
+
+}
+
+
+.motivation-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 45px;
+
+    border-radius: 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eef5ff,
+            #f8fbff
+        );
+
+    border: 1px solid #e4edff;
+
+}
+
+
+.motivation-card::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 250px;
+
+    height: 250px;
+
+    border-radius: 50%;
+
+    background: rgba(13,110,253,.06);
+
+    right: -70px;
+
+    top: -100px;
+
+}
+
+
+.motivation-badge {
+
+    display: inline-block;
+
+    color: #0d6efd;
+
+    font-weight: 800;
+
+    font-size: 12px;
+
+    letter-spacing: 1px;
+
+    margin-bottom: 12px;
+
+}
+
+
+.motivation-card h2 {
+
+    position: relative;
+
+    z-index: 2;
+
+    color: #172033;
+
+    font-size: 32px;
+
+    font-weight: 800;
+
+    margin-bottom: 12px;
+
+}
+
+
+.motivation-card p {
+
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 700px;
+
+    color: #6c757d;
+
+    line-height: 1.7;
+
+    margin-bottom: 0;
+
+}
+
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 991px) {
+
+    .student-hero {
+
+        padding: 55px 0;
+
+        text-align: center;
+
     }
 
-    #main-menu ul li a:hover {
-        color: #0d6efd;
+
+    .hero-text {
+
+        margin-left: auto;
+
+        margin-right: auto;
+
     }
 
-    .dashboard-card {
-        transition: all 0.3s ease;
+
+    .hero-buttons {
+
+        justify-content: center;
+
     }
 
-    .dashboard-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10) !important;
+
+    .student-user {
+
+        justify-content: flex-end;
+
     }
 
-    .site-logo img {
-        max-height: 55px;
-        width: auto;
+}
+
+
+@media (max-width: 575px) {
+
+    .student-hero {
+
+        padding: 45px 0;
+
     }
+
+
+    .hero-title {
+
+        font-size: 36px;
+
+    }
+
+
+    .hero-text {
+
+        font-size: 16px;
+
+    }
+
+
+    .hero-image {
+
+        max-height: 240px;
+
+    }
+
+
+    .section-heading h2 {
+
+        font-size: 28px;
+
+    }
+
+
+    .motivation-card {
+
+        padding: 30px 22px;
+
+    }
+
+
+    .motivation-card h2 {
+
+        font-size: 26px;
+
+    }
+
+}
 
 </style>
 

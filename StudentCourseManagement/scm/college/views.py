@@ -11,6 +11,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth import login
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
+from django.db.models import Avg
 
 
 def home(request):
@@ -264,7 +265,104 @@ def logout_user(request):
 @login_required
 @student_required
 def student_dashboard(request):
-    return render(request, "student_dashboard.html")
+
+    student = get_object_or_404(
+        Student,
+        user=request.user
+    )
+
+    # -----------------------------------------
+    # STUDENT'S ENROLLED COURSES
+    # -----------------------------------------
+    course_ids = Enrollment.objects.filter(
+        student=student
+    ).values_list(
+        'course_id',
+        flat=True
+    )
+
+    # -----------------------------------------
+    # TOTAL SUBJECTS
+    # -----------------------------------------
+    total_subjects = Subject.objects.filter(
+        course_id__in=course_ids
+    ).count()
+
+    # -----------------------------------------
+    # PENDING ASSIGNMENTS
+    # -----------------------------------------
+    assignments = Assignment.objects.filter(
+        subject__course_id__in=course_ids
+    )
+
+    submitted_assignment_ids = Submission.objects.filter(
+        student=student
+    ).values_list(
+        'assignment_id',
+        flat=True
+    )
+
+    pending_assignments = assignments.exclude(
+        id__in=submitted_assignment_ids
+    ).count()
+
+    # -----------------------------------------
+    # AVERAGE GRADE
+    # -----------------------------------------
+    average_grade = Submission.objects.filter(
+        student=student,
+        marks__isnull=False
+    ).aggregate(
+        average=Avg('marks')
+    )['average']
+
+    if average_grade is None:
+        average_grade = 0
+    else:
+        average_grade = round(average_grade, 2)
+
+    # -----------------------------------------
+    # ATTENDANCE %
+    # -----------------------------------------
+    attendance_records = Attendance.objects.filter(
+        student=student,
+        subject__course_id__in=course_ids
+    )
+
+    total_attendance = attendance_records.count()
+
+    present_attendance = attendance_records.filter(
+        status=True
+    ).count()
+
+    if total_attendance > 0:
+        attendance_percentage = round(
+            (present_attendance / total_attendance) * 100,
+            2
+        )
+    else:
+        attendance_percentage = 0
+
+    # -----------------------------------------
+    # DASHBOARD CONTEXT
+    # -----------------------------------------
+    context = {
+        'logged_in_student': student,
+
+        'total_subjects': total_subjects,
+
+        'pending_assignments': pending_assignments,
+
+        'average_grade': average_grade,
+
+        'attendance_percentage': attendance_percentage,
+    }
+
+    return render(
+        request,
+        'student_dashboard.html',
+        context
+    )
 
 @login_required
 @teacher_required
@@ -2490,4 +2588,27 @@ def signup(request):
     return render(
         request,
         "signup.html"
+    )
+
+@login_required
+def student_fees(request):
+    student = get_object_or_404(
+        Student,
+        user=request.user
+    )
+
+    student_fees = StudentFee.objects.filter(
+        student=student
+    ).select_related(
+        'fee_structure'
+    ).prefetch_related(
+        'payments'
+    )
+
+    return render(
+        request,
+        'student/fees.html',
+        {
+            'student_fees': student_fees
+        }
     )
